@@ -263,8 +263,24 @@
                     </div>
                 </div>
                 <div class="py-2 border-b border-base-300"></div>
-                <label for="quantidade" class="text-primary block mt-4">Quantidade</label>
-                <input id="quantidade" min='1' @input="CalcularPrecosPelaQuantidade()" v-model="TempArrayItem.quantidade" type="number" class="input input-bordered w-82 input-sm mt-2 text-right" />
+                <div class="flex justify-start">
+                    <div>
+                        <label for="quantidade" class="text-primary block mt-4">Quantidade</label>
+                        <input id="quantidade" min='1' @input="CalcularPrecosPelaQuantidade()" v-model="TempArrayItem.quantidade" type="number" class="input input-bordered w-82 input-sm mt-2 text-right" />
+                    </div>
+                    <div class="ms-4">
+                        <label for="quantidade" class="text-primary block mt-4" v-if="RegrasHabilitadas.length">Regra habilitada</label>
+                        <div>
+                            <div v-for="(item, index) in RegrasHabilitadas" :key="index" class="me-1">
+                                <div>
+                                    <span class="text-secondary">{{ item.aplicar }}%</span>
+                                    <small class="block text-xs text-red-500"> * {{ ( item.sugerir == 0 ? 'não sugerir' : 'sugerir' ) }}</small>
+                                </div>                                
+                            </div> 
+                        </div> 
+                    </div>                    
+                </div>
+                
                 <div class="text-xs mt-2">
                     <span class="opacity-60">peso:</span> <span>{{ formatNumero(String(TempArrayItem.pesoTotal),2) }} kg</span> 
                     <span class="opacity-60">, </span> 
@@ -338,8 +354,16 @@ import { Status } from '../../../provider/interface.ts';
 import { PedidoGestor, ItensPedidoGestor } from '../../../provider/interface_pedido.ts';
 import { Nivel } from '../../../provider/interface_nivel.ts';
 import { TempItem } from '../../../provider/interface_temp_item.ts';
-import { RegraPedido } from '../../../provider/interface_regra_pedido.ts';
+import { RegraPedido, RegraPedidoItem } from '../../../provider/interface_regra_pedido.ts';
 
+export interface AplicacaoRegra {
+    acumulativo: number,
+    aplicar:  string,
+    produtos:  string,
+    prioridade: number,
+    sugerir: number,
+    tipo_aplicacao: string
+}
 
 export default {
     components: {
@@ -351,7 +375,7 @@ export default {
             //Api Gestor
             apiGestor: inject < string > ("apiGestor"),
             //Id recebido via URL
-            id: this.$route.params.id,
+            id: this.$route.params.id as string,
 
             codigo_cliente: '',
             codigo_forma_pagamento: '',
@@ -404,7 +428,7 @@ export default {
             itemsPedido: [] as ItensPedidoGestor[],
             TempArrayItem: {} as TempItem,
             TempRegraPedido: {} as RegraPedido,
-            
+            RegrasHabilitadas: [] as AplicacaoRegra[],
         }
     },
     computed: {
@@ -681,53 +705,53 @@ export default {
         async AnaliseRegraPedido() {
             let TempItem = [] as RegraPedidoItem[];
             for (var i = 0; i < this.itemsPedido.length; i++) {
-                let Item = {
-                    pedido_empresa: this.id_empresa,
+                let Item: RegraPedidoItem = {
+                    pedido_empresa: parseInt(this.id_empresa),
                     produtos: this.itemsPedido[i].codigo,
                     produto_dias_sem_efetuar_compra: 1,
-                    quantidade: parseInt(this.itemsPedido[i].qtd),
+                    quantidade: this.itemsPedido[i].qtd,
                     unitario_bruto: parseFloat((this.itemsPedido[i].bruto / this.itemsPedido[i].emb).toFixed(2)),
-                    bruto: parseFloat(this.itemsPedido[i].bruto),
-                    total_bruto: parseFloat(this.itemsPedido[i].bruto * this.itemsPedido[i].qtd),
+                    bruto: this.itemsPedido[i].bruto,
+                    total_bruto: this.itemsPedido[i].bruto * parseFloat(this.itemsPedido[i].qtd),
                     unitario_liquido: parseFloat((this.itemsPedido[i].liquido / this.itemsPedido[i].emb).toFixed(2)),
-                    liquido: parseFloat(this.itemsPedido[i].liquido),
-                    total_liquido: parseFloat((this.itemsPedido[i].liquido * this.itemsPedido[i].qtd).toFixed(2)),
-                    peso_unitario: parseFloat(this.itemsPedido[i].peso),
-                    cubagem_unitaria: parseFloat(this.itemsPedido[i].cubagem),
-                    aliquota_repasse: parseFloat(this.itemsPedido[i].comissao),
-                    volume: parseFloat(this.itemsPedido[i].volume),
-                    grupos: 1,
+                    liquido: this.itemsPedido[i].liquido,
+                    total_liquido: parseFloat((this.itemsPedido[i].liquido * parseFloat(this.itemsPedido[i].qtd)).toFixed(2)),
+                    peso_unitario: this.itemsPedido[i].peso,
+                    cubagem_unitaria: this.itemsPedido[i].cubagem,
+                    aliquota_repasse: this.itemsPedido[i].comissao,
+                    volume: this.itemsPedido[i].volume,
+                    grupos: '1',
                     grupo_dias_sem_efetuar_compra: 1,
-                    familias: 1,
+                    familias: '1',
                     familia_dias_sem_efetuar_compra: 1
                 };
                 TempItem.push(Item);                
             }
 
-            let Item = {
-                pedido_empresa: this.id_empresa,
+            let Item: RegraPedidoItem = {
+                pedido_empresa: parseInt(this.id_empresa),
                 produtos: this.TempArrayItem.cod_produto,
                 produto_dias_sem_efetuar_compra: 1,
-                quantidade: parseInt(this.TempArrayItem.quantidade),
+                quantidade: String(this.TempArrayItem.quantidade),
                 unitario_bruto: parseFloat((this.TempArrayItem.precoproduto).toFixed(2)),
-                bruto: parseFloat(this.TempArrayItem.precoproduto),
-                total_bruto: parseFloat(this.TempArrayItem.precoproduto * this.TempArrayItem.quantidade),
+                bruto: this.TempArrayItem.precoproduto,
+                total_bruto: this.TempArrayItem.precoproduto * this.TempArrayItem.quantidade,
                 unitario_liquido: parseFloat((this.TempArrayItem.precoliquido).toFixed(2)),
-                liquido: parseFloat(this.TempArrayItem.precoliquido),
+                liquido: (this.TempArrayItem.precoliquido),
                 total_liquido: parseFloat((this.TempArrayItem.precoliquido).toFixed(2)),
-                peso_unitario: parseFloat(this.TempArrayItem.peso),
-                cubagem_unitaria: parseFloat(this.TempArrayItem.cubagem),
+                peso_unitario: (this.TempArrayItem.peso),
+                cubagem_unitaria: (this.TempArrayItem.cubagem),
                 aliquota_repasse: 5,
-                volume: parseFloat(this.TempArrayItem.volume),
-                grupos: 1,
+                volume: (this.TempArrayItem.volume),
+                grupos: '1',
                 grupo_dias_sem_efetuar_compra: 1,
-                familias: 1,
+                familias: '1',
                 familia_dias_sem_efetuar_compra: 1
             };
-            TempItem.push(Item);     
+            TempItem.push(Item);
             
-            this.TempRegraPedido = {data: [{
-                id: typeof this.id === 'string' && this.id === 'novo' ? null : parseInt(this.id || '0'),
+            this.TempRegraPedido = {
+                id: typeof this.id === 'string' && this.id === 'novo' ? parseInt('0') : parseInt(this.id) || parseInt('0'),
 
                 pedido_cliente: this.codigo_cliente,
                 pedido_dias_sem_efetuar_compra: '0',
@@ -737,23 +761,37 @@ export default {
                 pedido_representante: this.codigo_vendedor,
                 pedido_segmento_representante: 1,
                 pedido_supervisor: '1',
-                pedido_segmento_supervisor:  [ 1 ] as number[],
-                pedido_nivel: this.clienteNivel.id_nivel,
+                pedido_segmento_supervisor:  [],
+                pedido_nivel: String(this.clienteNivel.id_nivel),
                 pedido_cidade: this.clienteIBGE.IBGE,
                 pedido_estado: this.clienteIBGE.IBGE.substring(0,2),
                 pedido_prazo_do_pedido: this.codigo_prazo,
-                item: TempItem
-            }]};
+                item: [TempItem]
+            };
 
             const response = await axios.post(
                 '/comandos/classes/regra/busca_regra.php', {
-                    //id_pedido: this.id,
-                    id_regra: 4,
-                    array_pedido: this.TempRegraPedido
+                    id_pedido: null,
+                    id_regra: '4',
+                    array_pedido: {data: [this.TempRegraPedido] }
                 }
             );
             const data = response.data;
-            console.log(data, this.TempRegraPedido);
+            this.RegrasHabilitadas = data;
+            let dados = [];
+            for (var i = 0; i < data.data.itens[0].length; i++) {
+                if (this.TempArrayItem.cod_produto != '' && this.TempArrayItem.cod_produto == data.data.itens[0][i].produtos) {
+                    dados.push({
+                        acumulativo: data.data.acumulativo,
+                        aplicar:  data.data.aplicar,
+                        produtos:  data.data.itens[0][i].produtos,
+                        prioridade: data.data.prioridade,
+                        sugerir: data.data.sugerir,
+                        tipo_aplicacao: data.data.tipo_aplicacao
+                    });
+                }
+            }
+            this.RegrasHabilitadas = dados as any;
         }
     },
     async mounted() {

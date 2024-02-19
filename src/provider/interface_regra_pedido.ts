@@ -13,7 +13,7 @@ export interface RegraPedido {
     pedido_cidade: string,
     pedido_estado: string,
     pedido_prazo_do_pedido: string,
-    item: RegraPedidoItem[]
+    item: [RegraPedidoItem[]]
 }
 
 export interface RegraPedidoItem {
