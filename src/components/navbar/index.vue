@@ -41,11 +41,15 @@
                             <span class="badge badge-primary">Novo</span>
                         </a>
                     </li>
-                    <li><a>
-                            <i class="bx bx-cog"></i>Configurações</a>
+                    <li>
+                        <a>
+                            <i class="bx bx-cog"></i>Configurações
+                        </a>
                     </li>
-                    <li><a>
-                            <i class="bx bx-x"></i>Sair</a>
+                    <li>
+                        <a>
+                            <i class="bx bx-x"></i>Sair
+                        </a>
                     </li>
                 </ul>
             </div>

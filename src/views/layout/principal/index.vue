@@ -11,7 +11,7 @@
         <div class="drawer-side z-30">
             <label for="my-drawer" aria-label="close sidebar" class="drawer-overlay">
             </label>            
-            <ul class="menu bg-base-100 min-h-full w-56">
+            <ul class="menu bg-base-100 min-h-full w-56" id="menu">
                 <logoGestor :G="fillG" :ESTOR="fillESTOR" class="p-4" />
                 <li>
                     <router-link to="/principal" active-class="active"><i class="bx bx-home"></i>Início</router-link>
@@ -69,6 +69,30 @@ export default {
         const themeCheckedFromLocalStorage = localStorage.getItem('themecontroller');
         this.themeChecked = themeCheckedFromLocalStorage == 'true' ? true : false;
         this.fillESTOR = (this.themeChecked == false ? 'rgb(0,0,0)' : 'rgb(159, 185, 197)');
+
+        const elementosAtivos1 = document.querySelectorAll('#menu .active');
+        elementosAtivos1.forEach(elemento => {
+            const details = elemento.closest('details');
+            if (details) {
+                const elementoAnterior = details?.parentElement?.previousElementSibling;
+                if (elementoAnterior) {
+                    const activeInsidePreviousElement = elementoAnterior.querySelector('a');
+                    if (activeInsidePreviousElement) {
+                        activeInsidePreviousElement.classList.add('active-pai');
+                    }
+                }
+                details.setAttribute('open', 'open');
+            }
+        });
+        
+        const elementosAtivos = document.querySelectorAll('#menu .active, #menu .active-pai');
+        elementosAtivos.forEach(elemento => {            
+            const details = elemento.closest('details');
+            if (details) {
+                details.setAttribute('open', 'open');
+                
+            }
+        });
     }
 }
 </script>

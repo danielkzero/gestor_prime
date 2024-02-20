@@ -157,20 +157,18 @@
                                         <div class="text-left border-b border-base-300 pb-3">Sub-total</div>
                                     </div>
                                     <div class="mb-2">
-                                        <div class="absolute right-0 pr-4">R$ 0,00</div>
+                                        <div class="absolute right-0 pr-4">{{ formatMoeda(String(getDescontoTotal())) }}</div>
                                         <div class="text-left border-b border-base-300 pb-3">Desconto</div>
                                     </div>
                                     <div class="mb-2">
-                                        <div class="absolute right-0 pr-4">{{ formatMoeda(fnc_somatorio("total_imposto")) }}</div>
+                                        <div class="absolute right-0 pr-4">{{ formatMoeda(String(getImpostoTotal())) }}</div>
                                         <div class="text-left border-b border-base-300 pb-3">Imposto</div>
                                     </div>
                                     <div class="mb-2 font-bold text-primary">
                                         <div class="absolute right-0 pr-4">
                                             {{ 
                                                 formatMoeda(
-                                                    (
-                                                        parseFloat(fnc_somatorio("total_liquido")) + parseFloat(fnc_somatorio("total_imposto"))
-                                                    ).toString()
+                                                    String(getValorTotal())
                                                 ) 
                                             }}
                                         </div>
@@ -270,13 +268,13 @@
                     </div>
                     <div class="ms-4">
                         <label for="quantidade" class="text-primary block mt-4" v-if="RegrasHabilitadas.length">Regra habilitada</label>
-                        <div>
-                            <div v-for="(item, index) in RegrasHabilitadas" :key="index" class="me-1">
-                                <div>
+                        <div class="flex justify-start">
+                            <template v-for="item in RegrasHabilitadas" class="me-1">
+                                <div class="me-4">
                                     <span class="text-secondary">{{ item.aplicar }}%</span>
                                     <small class="block text-xs text-red-500"> * {{ ( item.sugerir == 0 ? 'não sugerir' : 'sugerir' ) }}</small>
                                 </div>                                
-                            </div> 
+                            </template> 
                         </div> 
                     </div>                    
                 </div>
@@ -534,6 +532,27 @@ export default {
             }
             return String(total);
         },
+        getDescontoTotal() {
+            let total = parseFloat(this.fnc_somatorio("total_liquido"));
+            total = total + parseFloat(this.fnc_somatorio("total_imposto")) * (this.percentual_especial / 100);
+
+            let descontoTotal = total * (1 - (this.desconto_suframa / 100));
+            descontoTotal = descontoTotal * (1 - (this.desconto_suframa_icms / 100));
+            descontoTotal = descontoTotal - this.desconto_adicional;
+            return total - descontoTotal;
+        },
+        getImpostoTotal() {
+            let impostoTotal = (parseFloat(this.fnc_somatorio("total_imposto")) * (this.percentual_especial / 100));
+            return impostoTotal;
+        },
+        getValorTotal() {
+            let valorTotal = parseFloat(this.fnc_somatorio("total_liquido"));
+            valorTotal = valorTotal + (parseFloat(this.fnc_somatorio("total_imposto")) * (this.percentual_especial / 100));
+            valorTotal = valorTotal * (1 - (this.desconto_suframa / 100));
+            valorTotal = valorTotal * (1 - (this.desconto_suframa_icms / 100));
+            valorTotal = valorTotal - this.desconto_adicional;
+            return valorTotal;
+        },
         async getPrecoProduto() {
             this.TempArrayItem = {
                 cod_produto: '',
@@ -703,8 +722,12 @@ export default {
             this.TempArrayItem.subtotal = subtotal;
         },
         async AnaliseRegraPedido() {
+            let existeNaLista = false;
             let TempItem = [] as RegraPedidoItem[];
             for (var i = 0; i < this.itemsPedido.length; i++) {
+                if (this.itemsPedido[i].codigo == this.TempArrayItem.cod_produto) {
+                    existeNaLista = true;
+                }
                 let Item: RegraPedidoItem = {
                     pedido_empresa: parseInt(this.id_empresa),
                     produtos: this.itemsPedido[i].codigo,
@@ -727,28 +750,30 @@ export default {
                 };
                 TempItem.push(Item);                
             }
-
-            let Item: RegraPedidoItem = {
-                pedido_empresa: parseInt(this.id_empresa),
-                produtos: this.TempArrayItem.cod_produto,
-                produto_dias_sem_efetuar_compra: 1,
-                quantidade: String(this.TempArrayItem.quantidade),
-                unitario_bruto: parseFloat((this.TempArrayItem.precoproduto).toFixed(2)),
-                bruto: this.TempArrayItem.precoproduto,
-                total_bruto: this.TempArrayItem.precoproduto * this.TempArrayItem.quantidade,
-                unitario_liquido: parseFloat((this.TempArrayItem.precoliquido).toFixed(2)),
-                liquido: (this.TempArrayItem.precoliquido),
-                total_liquido: parseFloat((this.TempArrayItem.precoliquido).toFixed(2)),
-                peso_unitario: (this.TempArrayItem.peso),
-                cubagem_unitaria: (this.TempArrayItem.cubagem),
-                aliquota_repasse: 5,
-                volume: (this.TempArrayItem.volume),
-                grupos: '1',
-                grupo_dias_sem_efetuar_compra: 1,
-                familias: '1',
-                familia_dias_sem_efetuar_compra: 1
-            };
-            TempItem.push(Item);
+            if (!existeNaLista) {
+                let Item: RegraPedidoItem = {
+                    pedido_empresa: parseInt(this.id_empresa),
+                    produtos: this.TempArrayItem.cod_produto,
+                    produto_dias_sem_efetuar_compra: 1,
+                    quantidade: String(this.TempArrayItem.quantidade),
+                    unitario_bruto: parseFloat((this.TempArrayItem.precoproduto).toFixed(2)),
+                    bruto: this.TempArrayItem.precoproduto,
+                    total_bruto: this.TempArrayItem.precoproduto * this.TempArrayItem.quantidade,
+                    unitario_liquido: parseFloat((this.TempArrayItem.precoliquido).toFixed(2)),
+                    liquido: (this.TempArrayItem.precoliquido),
+                    total_liquido: parseFloat((this.TempArrayItem.precoliquido).toFixed(2)),
+                    peso_unitario: (this.TempArrayItem.peso),
+                    cubagem_unitaria: (this.TempArrayItem.cubagem),
+                    aliquota_repasse: 5,
+                    volume: (this.TempArrayItem.volume),
+                    grupos: '1',
+                    grupo_dias_sem_efetuar_compra: 1,
+                    familias: '1',
+                    familia_dias_sem_efetuar_compra: 1
+                };
+                TempItem.push(Item);
+            }
+            
             
             this.TempRegraPedido = {
                 id: typeof this.id === 'string' && this.id === 'novo' ? parseInt('0') : parseInt(this.id) || parseInt('0'),

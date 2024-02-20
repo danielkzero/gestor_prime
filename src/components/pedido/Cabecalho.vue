@@ -59,7 +59,7 @@ export default {
                 return this.modelValue;
             },
             set(value: Item) {
-                const novoValor: Item = this.Dados?.find((item: any) => item.id === value.id ?? null) as Item;
+                const novoValor: Item = this.Dados?.find((item: any) => item.id === value.id || null) as Item;
                 this.$emit('update:modelValue', novoValor.id ?? null);
                 this.Displayme(novoValor.id ?? null);
                 this.Editar = false;
