@@ -10,7 +10,7 @@
 
         <div class="drawer-side z-30">
             <label for="my-drawer" aria-label="close sidebar" class="drawer-overlay">
-            </label>            
+            </label>
             <ul class="menu bg-base-100 min-h-full w-56" id="menu">
                 <logoGestor :G="fillG" :ESTOR="fillESTOR" class="p-4" />
                 <li>
