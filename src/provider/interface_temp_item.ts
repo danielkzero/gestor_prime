@@ -1,6 +1,8 @@
 export interface TempItem {
     cod_produto: string,
     nome_produto: string,
+    emb: string,
+    unidade: string,
     quantidade: number,
     desconto1: number,
     desconto2: number,
@@ -15,6 +17,6 @@ export interface TempItem {
     pesoTotal: number,
     cubagemTotal: number,
     volumeTotal: number,
-
+    comissao: number,
     PrecoMedioQuilo: number
 }

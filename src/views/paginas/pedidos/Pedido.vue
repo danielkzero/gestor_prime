@@ -132,9 +132,9 @@
                             </Column>
 
                             <Column :exportable="false" style="min-width:5rem">
-                                <template #body>
+                                <template #body="{ data }">
                                     <button class="me-2 text-primary"><i class="bx bx-edit"></i></button>
-                                    <button class="text-secondary"><i class="bx bx-trash"></i></button>
+                                    <button class="text-secondary" @click="removerProduto(data)"><i class="bx bx-trash"></i></button>
                                 </template>
                             </Column>
                         </DataTable>
@@ -333,7 +333,7 @@
                 </div>
                 <div class="py-2 border-b border-base-300"></div>
                 <div class="mt-4 justify-end">
-                    <button class="btn btn-primary btn-sm me-2">Adicionar</button>
+                    <button class="btn btn-primary btn-sm me-2" @click="adicionarProduto()">Adicionar</button>
                     <button class="btn btn-ghost btn-sm hover:bg-red-500 hover:text-red-100" @click="onModalToggle">Cancelar</button>
                 </div>
             </div>
@@ -353,6 +353,7 @@ import { PedidoGestor, ItensPedidoGestor } from '../../../provider/interface_ped
 import { Nivel } from '../../../provider/interface_nivel.ts';
 import { TempItem } from '../../../provider/interface_temp_item.ts';
 import { RegraPedido, RegraPedidoItem } from '../../../provider/interface_regra_pedido.ts';
+import Swal from 'sweetalert2';
 
 export interface AplicacaoRegra {
     acumulativo: number,
@@ -452,6 +453,70 @@ export default {
         ProdutoSelecionado() {}
     },
     methods: {
+        removerProduto(data: any) {
+            const swalWithBootstrapButtons = Swal.mixin({
+                customClass: {
+                    confirmButton: "btn btn-primary mx-2",
+                    cancelButton: "btn btn-secondary mx-2"
+                },
+                buttonsStyling: false
+            });
+            swalWithBootstrapButtons.fire({
+                title: "Atenção!",
+                text: "Essa ação não pode ser revertida!",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonText: "Excluir",
+                cancelButtonText: "Cancelar",
+                reverseButtons: true
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    swalWithBootstrapButtons.fire({
+                        title: "Excluído!",
+                        text: "Lembre-se de salvar para confirmar a exclusão!",
+                        icon: "success"
+                    });
+                    console.log(data);
+                } else if (result.dismiss === Swal.DismissReason.cancel) {
+                    swalWithBootstrapButtons.fire({
+                        title: "Cancelado",
+                        text: "Ufa!~",
+                        icon: "error"
+                    });
+                }
+            });
+        },
+        adicionarProduto() {
+            const JaExiste = this.itemsPedido.some((item: any) => item.codigo === this.TempArrayItem.cod_produto);
+            if (JaExiste) {
+                Swal.fire({
+                    title: 'Ops!',
+                    text: 'Esse produto já consta no pedido!',
+                    icon: 'error',
+                    confirmButtonText: 'Ok'
+                });
+                return;
+            }
+            
+            this.itemsPedido.unshift({
+                codigo: this.TempArrayItem.cod_produto,
+                qtd: String(this.TempArrayItem.quantidade),
+                descricao: this.TempArrayItem.nome_produto,
+                emb: parseInt(this.TempArrayItem.emb),
+                unidade: this.TempArrayItem.unidade,
+                bruto: this.TempArrayItem.precoproduto,
+                percentual: String(this.TempArrayItem.desconto1),
+                liquido: this.TempArrayItem.precoliquido,
+                total_imposto: parseFloat((this.TempArrayItem.subtotal * this.TempArrayItem.icms_destino).toFixed(2)),
+                icms_destino: this.TempArrayItem.icms_destino,
+                total_liquido: this.TempArrayItem.subtotal,
+                comissao: this.TempArrayItem.comissao,
+                peso: this.TempArrayItem.peso,
+                cubagem: this.TempArrayItem.cubagem,
+                volume: this.TempArrayItem.volume,
+            });
+            this.onModalToggle();
+        },
         limparSearchTermFilho() {
             let inputDropDown = this.$refs.inputDropDown as any;
             if (inputDropDown && typeof inputDropDown.setSearchTerm === 'function') {
@@ -557,6 +622,8 @@ export default {
             this.TempArrayItem = {
                 cod_produto: '',
                 nome_produto: '',
+                emb: '',
+                unidade: '',
                 quantidade: 0,
                 desconto1: 0,
                 desconto2: 0,
@@ -571,6 +638,7 @@ export default {
                 pesoTotal: 0,
                 cubagemTotal: 0,
                 volumeTotal: 0,
+                comissao: 0,
                 PrecoMedioQuilo: 0
             };
             const codigo_produto: any = this.ProdutoSelecionado;
@@ -588,6 +656,8 @@ export default {
                 this.TempArrayItem = {
                     cod_produto: this.TempArrayItem.cod_produto,
                     nome_produto: this.TempArrayItem.nome_produto,
+                    emb: this.TempArrayItem.emb,
+                    unidade: this.TempArrayItem.unidade,
                     quantidade: 1,
                     desconto1: 0,
                     desconto2: 0,
@@ -602,7 +672,8 @@ export default {
                     pesoTotal: this.TempArrayItem.peso,
                     cubagemTotal: this.TempArrayItem.cubagem,
                     volumeTotal: this.TempArrayItem.volume,
-                    PrecoMedioQuilo: (this.TempArrayItem.precoproduto * (1 + this.TempArrayItem.icms_destino)) / this.TempArrayItem.peso
+                    comissao: this.TempArrayItem.comissao,
+                    PrecoMedioQuilo:  (this.TempArrayItem.precoproduto * (1 + this.TempArrayItem.icms_destino)) / this.TempArrayItem.peso
                 }
             }
 
