@@ -5,8 +5,6 @@ export interface TempItem {
     unidade: string,
     quantidade: number,
     desconto1: number,
-    desconto2: number,
-    desconto3: number,
     precoproduto: number,
     precoliquido: number,
     icms_destino: number,

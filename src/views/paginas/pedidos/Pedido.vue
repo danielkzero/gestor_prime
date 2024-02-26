@@ -35,6 +35,7 @@
                                 v-model="codigo_cliente" 
                                 :Dados="itemsCliente"
                                 :minSearch="3" />
+                            <Telefone :Dados="PessoaContato" />
                         </div>
                     </div>
                 </div>
@@ -133,7 +134,7 @@
 
                             <Column :exportable="false" style="min-width:5rem">
                                 <template #body="{ data }">
-                                    <button class="me-2 text-primary"><i class="bx bx-edit"></i></button>
+                                    <button class="me-2 text-primary" @click="editarProduto(data)"><i class="bx bx-edit"></i></button>
                                     <button class="text-secondary" @click="removerProduto(data)"><i class="bx bx-trash"></i></button>
                                 </template>
                             </Column>
@@ -296,14 +297,6 @@
                             <label for="desconto1" class="text-error text-xs block">Desconto #1</label>
                             <input id="desconto1" step="0.01" min="0" @input="CalcularPrecos()" v-model="TempArrayItem.desconto1" type="number" class="input input-bordered w-82 input-sm mt-2 text-right" />
                         </div>
-                        <div class="ms-3">
-                            <label for="desconto2" class="text-error text-xs block">Desconto #2</label>
-                            <input id="desconto2" step="0.01" min="0" @input="CalcularPrecos()" v-model="TempArrayItem.desconto2" type="number" class="input input-bordered w-82 input-sm mt-2 text-right" />
-                        </div>
-                        <div class="ms-3">
-                            <label for="desconto3" class="text-error text-xs block">Desconto #3</label>
-                            <input id="desconto3" step="0.01" min="0" @input="CalcularPrecos()" v-model="TempArrayItem.desconto3" type="number" class="input input-bordered w-82 input-sm mt-2 text-right" />
-                        </div>
                     </div>                    
                 </div>
                 <div class="py-2 border-b border-base-300"></div>
@@ -354,6 +347,9 @@ import { Nivel } from '../../../provider/interface_nivel.ts';
 import { TempItem } from '../../../provider/interface_temp_item.ts';
 import { RegraPedido, RegraPedidoItem } from '../../../provider/interface_regra_pedido.ts';
 import Swal from 'sweetalert2';
+import { PessoaEndereco } from "../../../provider/interface_pessoa_endereco.ts";
+import { PessoaContato } from "../../../provider/interface_pessoa_contato.ts";
+import Telefone from "../../../components/telefone/index.vue";
 
 export interface AplicacaoRegra {
     acumulativo: number,
@@ -368,6 +364,7 @@ export default {
     components: {
         Cabecalho,
         InputDropDown, 
+        Telefone,
     },
     data() {
         return {
@@ -428,6 +425,8 @@ export default {
             TempArrayItem: {} as TempItem,
             TempRegraPedido: {} as RegraPedido,
             RegrasHabilitadas: [] as AplicacaoRegra[],
+            PessoaEndereco: [] as PessoaEndereco[],
+            PessoaContato: [] as PessoaContato[]
         }
     },
     computed: {
@@ -450,18 +449,20 @@ export default {
         }
     },    
     watch: {
-        ProdutoSelecionado() {}
+        ProdutoSelecionado() {},
+        codigo_cliente: async function () {
+            this.getNivel(this.codigo_cliente, this.id_empresa);
+            this.PessoaEndereco = await this.buscaEndereco('/comandos/inserts/json_pessoa_endereco.php', this.codigo_cliente);
+            this.PessoaContato = await this.buscaContato('/comandos/inserts/json_pessoa_contato.php', this.codigo_cliente);
+            
+        },
+        id_empresa: function () {
+            this.getNivel(this.codigo_cliente, this.id_empresa);
+        }
     },
     methods: {
         removerProduto(data: any) {
-            const swalWithBootstrapButtons = Swal.mixin({
-                customClass: {
-                    confirmButton: "btn btn-primary mx-2",
-                    cancelButton: "btn btn-secondary mx-2"
-                },
-                buttonsStyling: false
-            });
-            swalWithBootstrapButtons.fire({
+            Swal.fire({
                 title: "Atenção!",
                 text: "Essa ação não pode ser revertida!",
                 icon: "warning",
@@ -471,14 +472,16 @@ export default {
                 reverseButtons: true
             }).then((result) => {
                 if (result.isConfirmed) {
-                    swalWithBootstrapButtons.fire({
+                    const itemsFiltrados = this.itemsPedido.filter(val => val.codigo !== data.codigo);
+                    this.itemsPedido = itemsFiltrados;
+
+                    Swal.fire({
                         title: "Excluído!",
                         text: "Lembre-se de salvar para confirmar a exclusão!",
                         icon: "success"
-                    });
-                    console.log(data);
+                    });                                    
                 } else if (result.dismiss === Swal.DismissReason.cancel) {
-                    swalWithBootstrapButtons.fire({
+                    Swal.fire({
                         title: "Cancelado",
                         text: "Ufa!~",
                         icon: "error"
@@ -486,19 +489,44 @@ export default {
                 }
             });
         },
+        editarProduto(data: any) {
+            this.onModalToggle();
+            this.TempArrayItem = {
+                cod_produto: data.codigo,
+                nome_produto: data.descricao,
+                emb: data.emb,
+                unidade: data.unidade,
+                quantidade: parseInt(data.qtd),
+                desconto1: parseFloat(data.percentual.replace(',', '.')),
+                precoproduto: data.bruto,
+                precoliquido: data.liquido,
+                icms_destino: data.icms_destino,
+                subtotal: data.total_liquido,
+                peso: data.peso,
+                cubagem: data.cubagem,
+                volume: data.volume,
+                pesoTotal: data.peso * data.qtd,
+                cubagemTotal: data.cubagem * data.qtd,
+                volumeTotal: data.volume * data.qtd,
+                comissao: data.comissao,
+                PrecoMedioQuilo: data.total_liquido / (data.peso * data.qtd)
+            };
+            this.AnaliseRegraPedido();
+        },
+        findIndexById(codigo: string) {
+            let index = -1;
+            for (let i = 0; i < this.itemsPedido.length; i++) {
+                if (this.itemsPedido[i].codigo === codigo) {
+                    index = i;
+                    break;
+                }
+            }
+
+            return index;
+        },
         adicionarProduto() {
             const JaExiste = this.itemsPedido.some((item: any) => item.codigo === this.TempArrayItem.cod_produto);
-            if (JaExiste) {
-                Swal.fire({
-                    title: 'Ops!',
-                    text: 'Esse produto já consta no pedido!',
-                    icon: 'error',
-                    confirmButtonText: 'Ok'
-                });
-                return;
-            }
-            
-            this.itemsPedido.unshift({
+            const dadosRecebidos = {
                 codigo: this.TempArrayItem.cod_produto,
                 qtd: String(this.TempArrayItem.quantidade),
                 descricao: this.TempArrayItem.nome_produto,
@@ -514,7 +542,24 @@ export default {
                 peso: this.TempArrayItem.peso,
                 cubagem: this.TempArrayItem.cubagem,
                 volume: this.TempArrayItem.volume,
-            });
+            };
+            if (JaExiste) {
+                this.itemsPedido[this.findIndexById(dadosRecebidos.codigo)] = dadosRecebidos;
+                Swal.fire({
+                    title: 'Sucesso!',
+                    text: 'Produto atualizado!',
+                    icon: 'success',
+                    confirmButtonText: 'Ok'
+                });
+            }else{
+                this.itemsPedido.unshift(dadosRecebidos);
+                Swal.fire({
+                    title: 'Sucesso!',
+                    text: 'Produto adicionado!',
+                    icon: 'success',
+                    confirmButtonText: 'Ok'
+                });
+            }            
             this.onModalToggle();
         },
         limparSearchTermFilho() {
@@ -588,6 +633,16 @@ export default {
             });
             return remodeledData;
         },
+        async buscaEndereco(url: string, codigo: string) {
+            let response = await axios.get(url, { params: { codigo: codigo } });        
+            const data: PessoaEndereco[] = response.data.data;
+            return data;
+        },
+        async buscaContato(url: string, codigo: string) {
+            let response = await axios.get(url, { params: { codigo: codigo } });        
+            const data: PessoaContato[] = response.data.data;
+            return data;
+        },
         fnc_somatorio(key: string): string {
             let total = 0;
             if (this.itemsPedido.length > 0) {
@@ -626,8 +681,6 @@ export default {
                 unidade: '',
                 quantidade: 0,
                 desconto1: 0,
-                desconto2: 0,
-                desconto3: 0,
                 precoproduto: 0,
                 precoliquido: 0,
                 icms_destino: 0,
@@ -660,8 +713,6 @@ export default {
                     unidade: this.TempArrayItem.unidade,
                     quantidade: 1,
                     desconto1: 0,
-                    desconto2: 0,
-                    desconto3: 0,
                     precoproduto: this.TempArrayItem.precoproduto,
                     precoliquido: this.TempArrayItem.precoproduto,
                     icms_destino: this.TempArrayItem.icms_destino,
@@ -747,8 +798,6 @@ export default {
             let precoliquido = this.TempArrayItem.precoproduto;
             
             precoliquido = precoliquido * (1 - (this.TempArrayItem.desconto1 / 100));
-            precoliquido = precoliquido * (1 - (this.TempArrayItem.desconto2 / 100));
-            precoliquido = precoliquido * (1 - (this.TempArrayItem.desconto3 / 100));
 
             this.TempArrayItem.precoliquido = parseFloat(precoliquido.toFixed(2));
 
@@ -767,8 +816,6 @@ export default {
             this.TempArrayItem.volumeTotal = this.TempArrayItem.volume  * this.TempArrayItem.quantidade;
             
             this.TempArrayItem.desconto1 = 0;
-            this.TempArrayItem.desconto2 = 0;
-            this.TempArrayItem.desconto3 = 0;
             
             let subtotal = this.TempArrayItem.precoliquido;
             subtotal = subtotal * (1 + this.TempArrayItem.icms_destino);
@@ -898,7 +945,15 @@ export default {
         this.itemsPrazo = await this.popularArray('lista_prazo');
         this.itemsFormaPagamento = await this.popularArray('lista_forma_pagamento');
 
-        this.getPedidoCompleto(this.id.toString());
+
+        
+
+
+        if (this.id.toString() !== 'novo') {
+            this.getPedidoCompleto(this.id.toString());            
+        }else{
+            this.status = 'O';
+        }
 
         this.timeoutId = setTimeout(this.resizeTextarea, 1000);
     }
