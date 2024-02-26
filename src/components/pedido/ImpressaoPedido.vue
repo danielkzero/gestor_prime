@@ -2,14 +2,15 @@
     <div class="pagina_impressao" style="font-size: 0.9em">
         <div class="page-title">
             <div class="row border-bottom">
-                <div class="col-auto">{{ Pedido.numeroPedido }}</div>
-                <div class="col-auto">{{ Pedido.dataEmissao }}</div>
-                <div class="col-auto text-uppercase">{{ Pedido.tipoPedido }}</div>
-                <div class="col text-end">{{ Pedido.dataImpressao }}</div>
+                <div class="col-auto">{{ Pedido.numero_pedido }}</div>
+                <div class="col-auto">{{ Pedido.data_emissao }}</div>
+                <div class="col-auto text-uppercase">{{ Pedido.tipo_pedido }}</div>
+                <div class="col text-end">{{ DataImpressao() }}</div>
             </div>
             <div class="row">
                 <div class="col text-center text-uppercase">dados do cliente</div>
             </div>
+            <!--
             <div class="row text-uppercase">
                 <div class="col-auto text-nowrap">
                     {{ Pedido.cliente }}
@@ -23,6 +24,7 @@
                     {{ Pedido.end }}
                 </div>
             </div>
+            
             <div class="row text-uppercase">
                 <div class="col-auto">
                     {{ Pedido.bairro }}
@@ -34,6 +36,7 @@
                     {{ Pedido.tel }}
                 </div>
             </div>
+            -->
             <div class="row text-uppercase">
                 <div class="col-auto">
                     {{ Pedido.nivel }}
@@ -42,10 +45,10 @@
                     {{ Pedido.vendedor }}
                 </div>
                 <div class="col-auto">
-                    {{ Pedido.televendas }}
+                    {{ Pedido.televenda }}
                 </div>
                 <div class="float-end col-auto text-end">
-                    desconto máximo: {{ Pedido.descontoMaximo }}
+                    desconto máximo: {{ Pedido.desconto_maximo }}
                 </div>
             </div>
         </div>
@@ -69,16 +72,17 @@
                     </thead>
                     <tbody class="itens">
                         <tr  class="border-bottom" v-for="item in Pedido.item">
-                            <td class="text-center codigo p-1">{ item.codigo }</td>
-                            <td class="text-center qtd p-1">{ item.qtd }</td>
-                            <td class="text-start descricao p-1">{ item.descricao }</td>
-                            <td class="text-center emb p-1">{ item.emb }</td>
-                            <td class="text-center unidade p-1">{ item.unidade }</td>
-                            <td class="text-end bruto p-1">{ item.bruto }</td>
-                            <td class="percentual p-1" :class="item.display == '-'? 'text-center' : 'text-end'">{ item.display }</td>
-                            <td class="text-end liquido p-1">{ ConverterParaMoeda(item.liquido) }</td>
-                            <td class="text-end total_imposto p-1">{ (item.displayImposto == true ? ConverterParaMoeda(item.total_imposto) : ConverterParaMoeda(0)) }</td>
-                            <td class="text-end total_liquido p-1">{ ConverterParaMoeda(item.total_liquido) }</td>
+                            <td class="text-center codigo p-1">{{ item.codigo }}</td>
+                            <td class="text-center qtd p-1">{{ item.qtd }}</td>
+                            <td class="text-start descricao p-1">{{ item.descricao }}</td>
+                            <td class="text-center emb p-1">{{ item.emb }}</td>
+                            <td class="text-center unidade p-1">{{ item.unidade }}</td>
+                            <td class="text-end bruto p-1">{{ item.bruto }}</td>
+                            <td class="text-end bruto p-1">{{ item.bruto }}</td>
+                            <!--<td class="percentual p-1" :class="item.display == '-'? 'text-center' : 'text-end'">{{ item.display }}</td>-->
+                            <td class="text-end liquido p-1">{{ ConverterParaMoeda(String(item.liquido)) }}</td>
+                            <td class="text-end total_imposto p-1">{{ ConverterParaMoeda(String(item.total_imposto)) }}</td>
+                            <td class="text-end total_liquido p-1">{{ ConverterParaMoeda(String(item.total_liquido)) }}</td>
                         </tr>
                     </tbody>
                 </table>
@@ -158,14 +162,25 @@
 
 <script lang="ts">
 import { PedidoGestor } from "../../provider/interface_pedido.ts";
-
+import moment from 'moment';
 export default {
     name: "PedidoImpressao",
     props: {
         Pedido: {
-            type: Array as() => PedidoGestor[],
-            required: true,
+            type: Object as () => PedidoGestor,
+            required: true
         },
     },
+    methods: {
+        ConverterParaMoeda(valor: string) {
+            return parseFloat(valor).toLocaleString("pt-br", {
+                style: "currency",
+                currency: "BRL",
+            });
+        },
+        DataImpressao() {
+            return moment(new Date(), "YYYY-MM-DD").format("DD/MM/YYYY");
+        }
+    }
 };
 </script>

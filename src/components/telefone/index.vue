@@ -13,8 +13,7 @@ export default {
         }
     },
     methods: {
-        convertLink(link) {
-            console.log(link);
+        convertLink(link: string) {
             return link.replace(" ","").replace("(","").replace(")","").replace("-","");
         }
     }

@@ -453,8 +453,7 @@ export default {
         codigo_cliente: async function () {
             this.getNivel(this.codigo_cliente, this.id_empresa);
             this.PessoaEndereco = await this.buscaEndereco('/comandos/inserts/json_pessoa_endereco.php', this.codigo_cliente);
-            this.PessoaContato = await this.buscaContato('/comandos/inserts/json_pessoa_contato.php', this.codigo_cliente);
-            
+            this.PessoaContato = await this.buscaContato('/comandos/inserts/json_pessoa_contato.php', this.codigo_cliente);            
         },
         id_empresa: function () {
             this.getNivel(this.codigo_cliente, this.id_empresa);
