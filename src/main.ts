@@ -1,11 +1,12 @@
 import './app.css';
 import { createApp } from 'vue';
 import App from './App.vue';
+
 import { registerPlugins } from './plugins/index.ts';
 import 'boxicons';
 import 'boxicons/css/boxicons.min.css';
 
-import "primevue/resources/primevue.min.css"; 
+import "primevue/resources/primevue.min.css";
 import "primeicons/primeicons.css";
 
 /* PRIMEVUE */
@@ -33,4 +34,5 @@ app.use(PrimeVue);
 /* PRIMEVUE */
 app.provide('apiGestor', apiGestor);
 registerPlugins(app);
+
 app.mount('#app');

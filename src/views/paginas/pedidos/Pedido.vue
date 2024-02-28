@@ -204,7 +204,7 @@
             <div class="p-4">
                 <div class="pb-3 text-sm">Ações</div>
                 <button class="btn btn-primary w-full btn-sm mb-2" @click="show()">Salvar</button>
-                <button class="btn btn-ghost w-full btn-sm mb-2">Imprimir</button>
+                <button class="btn btn-ghost w-full btn-sm mb-2" @click="imprimir()">Imprimir</button>
                 <button class="btn btn-ghost hover:bg-red-500 hover:text-red-100 w-full btn-sm mb-2">Cancelar</button>
 
                 <div class="py-1 border-b border-base-300"></div>
@@ -332,7 +332,9 @@
             </div>
         </dialog>
     </transition>
+    <ImpressaoPedido ref="conteudoParaImprimir" :Pedido="id"  style="display: none;" />    
 </template>
+
 <script lang="ts">
 
 import { inject } from "vue";
@@ -350,6 +352,8 @@ import Swal from 'sweetalert2';
 import { PessoaEndereco } from "../../../provider/interface_pessoa_endereco.ts";
 import { PessoaContato } from "../../../provider/interface_pessoa_contato.ts";
 import Telefone from "../../../components/telefone/index.vue";
+import ImpressaoPedido from "../../../components/pedido/ImpressaoPedido.vue";
+
 
 export interface AplicacaoRegra {
     acumulativo: number,
@@ -365,6 +369,7 @@ export default {
         Cabecalho,
         InputDropDown, 
         Telefone,
+        ImpressaoPedido
     },
     data() {
         return {
@@ -426,7 +431,7 @@ export default {
             TempRegraPedido: {} as RegraPedido,
             RegrasHabilitadas: [] as AplicacaoRegra[],
             PessoaEndereco: [] as PessoaEndereco[],
-            PessoaContato: [] as PessoaContato[]
+            PessoaContato: [] as PessoaContato[],
         }
     },
     computed: {
@@ -460,6 +465,58 @@ export default {
         }
     },
     methods: {
+        imprimir() {
+            const printableContent = (this.$refs.conteudoParaImprimir as any).$el as HTMLElement;           
+            
+            const printWindow = window.open('', '', 'height=1000,width=1000');            
+            if (printWindow) {
+                printWindow.document.body.style.display = 'none';
+                printWindow.document.write(`
+                <!DOCTYPE html>
+                <html>
+                    <head>
+                        <title>Imprimir Pedido</title>
+                        <style>
+                            html, body {
+                                margin: 0px; padding:0px;
+                            }
+                            @media print 
+                            {
+                                @page {
+                                    size: A4; 
+                                    margin: 0;
+                                }
+                                html, body {
+                                    width: 210mm;
+                                    height: 297mm;
+                                    font-size: 11px;
+                                    background: #FFF;
+                                    overflow: visible;
+                                }
+                                body {
+                                    padding: 5mm;
+                                    margin: 10mm;
+                                }
+                            }
+                        </style>
+                        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+                    </head>
+                    <body>
+                        ${printableContent.innerHTML}
+                    </body>
+                </html>
+                `);
+                let scriptElement = printWindow.document.createElement('script');
+                scriptElement.type = "text/javascript";
+                scriptElement.text = `
+                setTimeout(function() {
+                    window.print();
+                    window.close();
+                }, 500);
+                `;
+                printWindow.document.body.appendChild(scriptElement);
+            }
+        },
         removerProduto(data: any) {
             Swal.fire({
                 title: "Atenção!",
@@ -611,7 +668,7 @@ export default {
             console.log("-");
         },
         async popularArray(url: string) {
-            let response = await axios.get(`http://191.168.0.12/comandos/classes/com/comandos/com_regra/`+url+`.php`);        
+            let response = await axios.get(`http://191.168.0.12/comandos/classes/com/comandos/com_regra/`+url+`.php`);
             const data = response.data.data;
             const remodeledData = data.map((item: any) => {
                 return {
@@ -944,12 +1001,8 @@ export default {
         this.itemsPrazo = await this.popularArray('lista_prazo');
         this.itemsFormaPagamento = await this.popularArray('lista_forma_pagamento');
 
-
-        
-
-
         if (this.id.toString() !== 'novo') {
-            this.getPedidoCompleto(this.id.toString());            
+            this.getPedidoCompleto(this.id.toString());
         }else{
             this.status = 'O';
         }

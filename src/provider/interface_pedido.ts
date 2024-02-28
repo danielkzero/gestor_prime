@@ -29,7 +29,7 @@ export interface PedidoGestor {
     desconto_adicional: number,
     status: string,
     autor_lancamento: string,
-    item: ItensPedidoGestor[]
+    item: Array<ItensPedidoGestor>
 }
 
 export interface ItensPedidoGestor {
