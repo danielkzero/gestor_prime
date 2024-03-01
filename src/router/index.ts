@@ -47,6 +47,11 @@ const routes = [
         path: '/relatorio/proporcao',
         name: 'Relatorios',
         component: () => import('../views/paginas/relatorio/proporcao.vue')
+      },
+      {
+        path: '/relatorio/bling',
+        name: 'RelatoriosProporcao',
+        component: () => import('../views/paginas/relatorio/bling.vue')
       }
     ]
   }

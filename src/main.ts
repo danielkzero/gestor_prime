@@ -6,6 +6,9 @@ import { registerPlugins } from './plugins/index.ts';
 import 'boxicons';
 import 'boxicons/css/boxicons.min.css';
 
+
+
+
 import "primevue/resources/primevue.min.css";
 import "primeicons/primeicons.css";
 
@@ -15,6 +18,7 @@ import PrimeVue from "primevue/config";
 import DataTable from 'primevue/datatable';
 import Column from 'primevue/column';
 import Row from 'primevue/row';
+import Steps from 'primevue/steps';
 //import ColumnGroup from 'primevue/ColumnGroup';
 
 
@@ -29,6 +33,7 @@ app.component('DataTable', DataTable);
 //app.component('ColumnGroup', ColumnGroup);
 app.component('Column', Column);
 app.component('Row', Row);
+app.component('Steps', Steps);
 app.use(PrimeVue);
 
 /* PRIMEVUE */

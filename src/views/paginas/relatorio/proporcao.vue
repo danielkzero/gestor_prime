@@ -15,16 +15,15 @@
     no período de
     <details class="dropdown ClickScreenToClose">
       <summary class="m-1 link link-primary">
-        {{ periodo[periodo_select].data_inicial }} à
-        {{ periodo[periodo_select].data_final }}
+        {{ CDate(periodo[periodo_select].data_inicial) }} à
+        {{ CDate(periodo[periodo_select].data_final) }}
       </summary>
       <ul class="shadow menu dropdown-content z-[1] bg-base-100 rounded-box w-64">
         <li v-for="(item, index) in periodo" :key="index">
-          <a
-            :class="periodo_select == index ? 'active' : ''"
-            @click="periodo_select = index"
-            >{{ item.data_inicial }} à {{ item.data_final }}</a
-          >
+          <a :class="periodo_select == index ? 'active' : ''" 
+            @click="periodo_select = index">
+            {{ CDate(item.data_inicial) }} à {{ CDate(item.data_final) }}
+          </a>
         </li>
         <button
           class="btn btn-sm btn-secondary mt-2"
@@ -68,7 +67,7 @@
           <div class="stat-value text-2xl text-primary">
             <div 
               :class="periodo_select == index ? 'active' : ''"
-              @click="periodo_select = index">{{ item.data_inicial }} à {{ item.data_final }}</div>
+              @click="periodo_select = index">{{ CDate(item.data_inicial) }} à {{ CDate(item.data_final) }}</div>
           </div>
         </div>
       </div>
@@ -117,8 +116,8 @@ export default {
   data() {
     return {
       apiGestor: inject<string>("apiGestor"),
-      tdata_inicial: new Date(),
-      tdata_final: new Date(),
+      tdata_inicial: moment(new Date()).format("yyyy-MM-DD"),
+      tdata_final: moment(new Date()).format("yyyy-MM-DD"),
       chartOptions: {},
       series: [] as any[],
       tipo: [
@@ -134,8 +133,8 @@ export default {
       tipo_select: 0,
       periodo: [
         {
-          data_inicial: moment(new Date(), 'YYYY-MM-DD').format('DD/MM/YYYY'),
-          data_final: moment(new Date(), 'YYYY-MM-DD').format('DD/MM/YYYY'),
+          data_inicial: moment(new Date()).format("yyyy-MM-DD"),
+          data_final: moment(new Date()).format("yyyy-MM-DD"),
         },
       ],
       periodo_select: 0,
@@ -165,6 +164,10 @@ export default {
     },
   },
   methods: {
+    CDate(TDATA: String) {
+      let resposta = moment(String(TDATA), "yyyy-MM-DD").format("DD/MM/yyyy");
+      return resposta;
+    },
     deletePeriodo(index: any) {
       if (index == this.periodo_select) {
         alert("Erro ao deletar esse período!");
@@ -178,10 +181,11 @@ export default {
     async adicionar_periodo_lista () {
       this.periodo.push(
         {
-          data_inicial: moment(this.tdata_inicial, 'YYYY-MM-DD').format('DD/MM/YYYY'),
-          data_final: moment(this.tdata_final, 'YYYY-MM-DD').format('DD/MM/YYYY')
+          data_inicial: this.tdata_inicial,
+          data_final: this.tdata_final
         }
       );
+      localStorage.setItem("periodo", JSON.stringify(this.periodo));
     },
     percentualParaHex(percentual: number) {
       const valorHex = percentual.toString(16);
@@ -190,14 +194,8 @@ export default {
     async recarregar() {
       this.totais(
         this.tipo[this.tipo_select].caminho_api,
-        moment(
           this.periodo[this.periodo_select].data_inicial,
-          "DD/MM/YYYY"
-        ).format("YYYY-MM-DD"),
-        moment(
           this.periodo[this.periodo_select].data_final,
-          "DD/MM/YYYY"
-        ).format("YYYY-MM-DD"),
         this.empresa[this.empresa_select].id
       );
     },
@@ -286,7 +284,7 @@ export default {
       }
     },
   },
-  mounted() {
+  mounted() {    
     this.recarregar();
   },
 };

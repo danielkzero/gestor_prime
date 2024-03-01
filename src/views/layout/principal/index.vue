@@ -25,11 +25,8 @@
                                 <details>
                                     <summary><i class="bx bx-chart"></i>Relatórios</summary>
                                     <ul>
+                                        <li><router-link to="/relatorio/bling" active-class="active">Bling</router-link></li>
                                         <li><router-link to="/relatorio/proporcao" active-class="active">Proporção</router-link></li>
-                                        <li><router-link to="/relatorio/comercial" active-class="active">Comercial</router-link></li>
-                                        <li><router-link to="/relatorio/clientes" active-class="active">Clientes</router-link></li>
-                                        <li><router-link to="/relatorio/produtos" active-class="active">Produtos</router-link></li>
-                                        <li><router-link to="/relatorio/mapa" active-class="active">Mapa</router-link></li>
                                     </ul>
                                 </details>
                             </li>

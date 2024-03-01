@@ -40,9 +40,12 @@ export default {
         async imprimir(numero_objeto: string, imposto: boolean) {
             let response = await axios.get('/comandos/classes/pedido/comandos/pedido/json_pedido_completo.php', {params: { id: numero_objeto }});
             this.pedido = response.data.data[0];
-            this.html_impressao = await this.impressao_pedido(this.pedido, imposto);
+            this.html_impressao = await this.impressao_pedido(this.pedido, imposto) || '';
         },
         async impressao_pedido (pedido: PedidoGestor, displayImposto: boolean) {
+            if(pedido == undefined) {
+                return;
+            }
             let response_cliente = await axios.get('/comandos/inserts/json_pessoa_endereco.php', {params: { codigo: pedido.codigo_cliente }}); 
             this.info_cliente = response_cliente.data.data[0];
 

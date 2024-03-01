@@ -3,11 +3,15 @@
         <div class="card shadow bg-base-100  col-span-8 md:col-span-6">
             <div class="">
                 <div class="p-4 pb-3 border-b border-base-300">
-                    <span class="text-success">#{{ id }}</span> emitido por 
-                    <span class="text-success" style="text-transform: capitalize;">{{ autor_lancamento }}</span>
-                        em {{ formatData(data_emissao) }}
-                    
-                    <div style="float: right;">
+                    <template v-if="id != 'novo'">
+                        <span class="text-success">#{{ id }}</span> emitido por 
+                        <span class="text-success" style="text-transform: capitalize;">{{ autor_lancamento }}</span>
+                            em {{ formatData(data_emissao) }}
+                    </template>
+                    <template v-else>
+                        <span class="text-success"> &nbsp; </span>
+                    </template>
+                    <div style="float: right;" v-if="clienteNivel.nome_nivel">
                         <div class="badge text-red-100 bg-red-500 ms-2">
                             {{ clienteNivel.nome_nivel ?? '' }}
                         </div>
@@ -17,6 +21,10 @@
                             {{ show_status(status)?.texto ?? '' }}
                         </div>
                     </div>
+                    
+                </div>
+                <div class="border-b border-base-300">
+                    <ProgressoPedido />
                 </div>
 
                 <div class="p-4 border-b border-base-300">
@@ -265,7 +273,13 @@
                 <div class="flex justify-start">
                     <div>
                         <label for="quantidade" class="text-primary block mt-4">Quantidade</label>
-                        <input id="quantidade" min='1' @input="CalcularPrecosPelaQuantidade()" v-model="TempArrayItem.quantidade" type="number" class="input input-bordered w-82 input-sm mt-2 text-right" />
+                        <input 
+                            ref="inputQuantidade"  
+                            @keydown.enter.prevent="focusNextInput($event, 'desconto1')" 
+                            id="quantidade" min='1' 
+                            @input="CalcularPrecosPelaQuantidade()" 
+                            v-model="TempArrayItem.quantidade" 
+                            type="number" class="input input-bordered w-82 input-sm mt-2 text-right" />
                     </div>
                     <div class="ms-4">
                         <label for="quantidade" class="text-primary block mt-4" v-if="RegrasHabilitadas.length">Regra habilitada</label>
@@ -295,7 +309,10 @@
                     <div class="flex justify-start">
                         <div>
                             <label for="desconto1" class="text-error text-xs block">Desconto #1</label>
-                            <input id="desconto1" step="0.01" min="0" @input="CalcularPrecos()" v-model="TempArrayItem.desconto1" type="number" class="input input-bordered w-82 input-sm mt-2 text-right" />
+                            <input 
+                                ref="desconto1"
+                                @keydown.enter.prevent="focusNextInput($event, 'precoliquido')" 
+                                id="desconto1" step="0.01" min="0" @input="CalcularPrecos()" v-model="TempArrayItem.desconto1" type="number" class="input input-bordered w-82 input-sm mt-2 text-right" />
                         </div>
                     </div>                    
                 </div>
@@ -309,7 +326,11 @@
                     </div>
                     <div class="mx-4">
                         <label for="precoliquido" class="text-primary text-xs block mt-4">Preço Líquido</label>
-                        <input id="precoliquido" step="0.01" min="0" @input="CalcularPrecosPeloLiquido()" v-model="TempArrayItem.precoliquido" type="number" class="input input-bordered w-82 input-sm mt-2 text-right" />
+                        <input 
+                            ref="precoliquido" 
+                            @keydown.enter.prevent="focusNextInput($event, 'buttonAdicionar')" 
+                            id="precoliquido" step="0.01" min="0" @input="CalcularPrecosPeloLiquido()" 
+                            v-model="TempArrayItem.precoliquido" type="number" class="input input-bordered w-82 input-sm mt-2 text-right" />
                     </div>
                     <div class="mx-4 opacity-80" v-if="TempArrayItem.icms_destino">
                         <label for="icms_destino" class="text-xs block mt-4">ICMS-ST</label>
@@ -326,13 +347,14 @@
                 </div>
                 <div class="py-2 border-b border-base-300"></div>
                 <div class="mt-4 justify-end">
-                    <button class="btn btn-primary btn-sm me-2" @click="adicionarProduto()">Adicionar</button>
+                    <button ref="buttonAdicionar"  class="btn btn-primary btn-sm me-2" @click="adicionarProduto()">Adicionar</button>
                     <button class="btn btn-ghost btn-sm hover:bg-red-500 hover:text-red-100" @click="onModalToggle">Cancelar</button>
                 </div>
             </div>
         </dialog>
     </transition>
-    <ImpressaoPedido ref="conteudoParaImprimir" :Pedido="id"  style="display: none;" />    
+    
+    <ImpressaoPedido ref="conteudoParaImprimir" :Pedido="id"  style="display: none;" />
 </template>
 
 <script lang="ts">
@@ -353,7 +375,7 @@ import { PessoaEndereco } from "../../../provider/interface_pessoa_endereco.ts";
 import { PessoaContato } from "../../../provider/interface_pessoa_contato.ts";
 import Telefone from "../../../components/telefone/index.vue";
 import ImpressaoPedido from "../../../components/pedido/ImpressaoPedido.vue";
-
+import ProgressoPedido from "../../../components/pedido/ProgressoPedido.vue";
 
 export interface AplicacaoRegra {
     acumulativo: number,
@@ -369,7 +391,8 @@ export default {
         Cabecalho,
         InputDropDown, 
         Telefone,
-        ImpressaoPedido
+        ImpressaoPedido,
+        ProgressoPedido
     },
     data() {
         return {
@@ -383,8 +406,8 @@ export default {
             codigo_prazo: '',
             codigo_televenda: '',
             codigo_vendedor: '',
-            data_emissao: '',
-            data_entrega: '',
+            data_emissao: moment(new Date()).format("yyyy-MM-DD"),
+            data_entrega: moment(new Date()).add(14, 'days').format("yyyy-MM-DD"),
             desconto_adicional: 0,
             desconto_maximo: 0,
             desconto_suframa: 0,
@@ -626,10 +649,17 @@ export default {
         },
         onModalToggle() {
             this.modalIsOpen = !this.modalIsOpen;
+            let element = this.$refs.inputQuantidade as HTMLElement;
+            element.focus();
+        },
+        focusNextInput(event: any, nextInput: any) {
+            if (event.key === 'Enter') {
+                let element = this.$refs[nextInput] as HTMLElement;
+                element.focus();
+            }
         },
         resize(refName: string) {
             let element = this.$refs[refName] as HTMLElement;
-
             element.style.height = "5rem";
             element.style.height = (element.scrollHeight + 3) + "px";
         },

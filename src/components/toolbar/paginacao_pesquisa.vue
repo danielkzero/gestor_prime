@@ -16,8 +16,8 @@
                         Próxima <i class="bx bx-chevron-right"></i>
                     </a>
                 </div>
-                <a href="/pedidos/novo" class="join-item btn btn-primary ms-3">
-                    Criar pedido 
+                <a href="/home/pedidos/novo" class="join-item btn btn-primary ms-3">
+                    Criar pedido
                 </a>
             </div>
             <div class="text-right col-span-6 md:col-span-3">
