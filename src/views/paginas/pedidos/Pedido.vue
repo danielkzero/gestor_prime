@@ -24,7 +24,7 @@
                     
                 </div>
                 <div class="border-b border-base-300">
-                    <ProgressoPedido />
+                    <ProgressoPedido :id_pedido="id" />
                 </div>
 
                 <div class="p-4 border-b border-base-300">
