@@ -5,6 +5,8 @@ import App from './App.vue';
 import { registerPlugins } from './plugins/index.ts';
 import 'boxicons';
 import 'boxicons/css/boxicons.min.css';
+// @ts-ignore
+import JsonExcel from "vue-json-excel3";
 
 
 
@@ -27,7 +29,7 @@ const apiGestor = "/api";
 const app = createApp(App);
 /* PRIMEVUE */
 
-
+app.component("downloadExcel", JsonExcel);
 
 app.component('DataTable', DataTable);
 //app.component('ColumnGroup', ColumnGroup);

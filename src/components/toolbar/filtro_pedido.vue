@@ -97,8 +97,8 @@ import { TipoPedido, Empresa, Periodo } from "../../provider/interface.ts";
 export default {
     data() {
         return {
-            tdata_inicial: "" as string,
-            tdata_final: "" as string,
+            tdata_inicial: moment(new Date()).format("yyyy-MM-DD") as string,
+            tdata_final: moment(new Date()).format("yyyy-MM-DD") as string,
         }
     },
     props: {

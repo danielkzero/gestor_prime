@@ -70,7 +70,19 @@
     </dialog>
     
     <div class="card bg-base-100 border-base-300 rounded-box mt-3">
+        <div class="p-3">
+          <button class="btn btn-success btn-sm">
+            <download-excel :data="dados">
+             Download Excel  <i class='bx bxs-file-export'></i>
+            </download-excel>
+          </button>
+        </div>
         <DataTable :loading="loadData" class="table table-sm" :value="dados" :paginator="true" :rows="50" :rowsPerPageOptions="[10, 50, 100]">
+          <Column field="data" style="width: 100px; min-width: 100px" sortable header="#Cód.Loja">
+                <template #body="{ data }">
+                    <div class="font-bold">{{ data.numeroPedidoLoja }}</div>
+                </template>
+            </Column>
             <Column field="numero_bling" style="width: 100px; min-width: 100px" sortable header="#Cód."></Column>
             <Column field="chaveAcesso" style="width: 100px; min-width: 100px" sortable header="Chave de acesso"></Column>        
             <Column field="data" style="width: 100px; min-width: 100px" sortable header="Cadastro">
@@ -263,7 +275,7 @@ import ColumnGroup from "primevue/columngroup";
             }
           );
           this.dados = response.data;
-  
+          console.log(response.data);
         } catch (error) {
           console.error("Erro ao obter dados:", error);
         } finally {

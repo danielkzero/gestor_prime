@@ -1000,15 +1000,16 @@ export default {
 
             const response = await axios.post(
                 '/comandos/classes/regra/busca_regra.php', {
-                    id_pedido: null,
-                    id_regra: '4',
+                    id_pedido: 114386,
+                    id_regra: '6',
                     array_pedido: {data: [this.TempRegraPedido] }
                 }
             );
             const data = response.data;
+            console.log(data);
             this.RegrasHabilitadas = data;
             let dados = [];
-            for (var i = 0; i < data.data.itens[0].length; i++) {
+            for (var i = 0; i < data.length; i++) {
                 if (this.TempArrayItem.cod_produto != '' && this.TempArrayItem.cod_produto == data.data.itens[0][i].produtos) {
                     dados.push({
                         acumulativo: data.data.acumulativo,
