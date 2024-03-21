@@ -116,7 +116,6 @@ export default {
                 this.percentualStop += 0;
             }
             this.percentualStop = parseInt(String(this.percentualStop));
-            console.log(this.cancelado, this.percentualStop);
         }
     },
     mounted() {
