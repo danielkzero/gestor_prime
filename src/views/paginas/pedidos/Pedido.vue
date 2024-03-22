@@ -947,9 +947,9 @@ export default {
                     cubagem_unitaria: this.itemsPedido[i].cubagem,
                     aliquota_repasse: this.itemsPedido[i].comissao,
                     volume: this.itemsPedido[i].volume,
-                    grupos: '1',
+                    grupos: this.itemsPedido[i].grupo,
                     grupo_dias_sem_efetuar_compra: 1,
-                    familias: '1',
+                    familias: this.itemsPedido[i].familia,
                     familia_dias_sem_efetuar_compra: 1
                 };
                 TempItem.push(Item);                
@@ -970,9 +970,9 @@ export default {
                     cubagem_unitaria: (this.TempArrayItem.cubagem),
                     aliquota_repasse: 5,
                     volume: (this.TempArrayItem.volume),
-                    grupos: '1',
+                    grupos: this.itemsPedido[i].grupo,
                     grupo_dias_sem_efetuar_compra: 1,
-                    familias: '1',
+                    familias: this.itemsPedido[i].familia,
                     familia_dias_sem_efetuar_compra: 1
                 };
                 TempItem.push(Item);
@@ -1000,27 +1000,28 @@ export default {
 
             const response = await axios.post(
                 '/comandos/classes/regra/busca_regra.php', {
-                    id_pedido: 114386,
+                    id_pedido: null,
                     id_regra: '6',
                     array_pedido: {data: [this.TempRegraPedido] }
                 }
             );
             const data = response.data;
-            console.log(data);
-            this.RegrasHabilitadas = data;
+            //console.log(data);
             let dados = [];
-            for (var i = 0; i < data.length; i++) {
-                if (this.TempArrayItem.cod_produto != '' && this.TempArrayItem.cod_produto == data.data.itens[0][i].produtos) {
-                    dados.push({
-                        acumulativo: data.data.acumulativo,
-                        aplicar:  data.data.aplicar,
-                        produtos:  data.data.itens[0][i].produtos,
-                        prioridade: data.data.prioridade,
-                        sugerir: data.data.sugerir,
-                        tipo_aplicacao: data.data.tipo_aplicacao
-                    });
+            if (data != null) {
+                for (var i = 0; i < data.data.itens[0][0].length; i++) {
+                    if (this.TempArrayItem.cod_produto != '' && this.TempArrayItem.cod_produto == data.data.itens[0][0][i].produtos) {
+                        dados.push({
+                            acumulativo: data.data.acumulativo,
+                            aplicar:  data.data.aplicar,
+                            produtos:  data.data.itens[0][0][i].produtos,
+                            prioridade: data.data.prioridade,
+                            sugerir: data.data.sugerir,
+                            tipo_aplicacao: data.data.tipo_aplicacao
+                        });
+                    }
                 }
-            }
+            }            
             this.RegrasHabilitadas = dados as any;
         }
     },
