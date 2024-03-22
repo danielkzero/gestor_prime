@@ -47,5 +47,7 @@ export interface ItensPedidoGestor {
     comissao: number,
     peso: number,
     cubagem: number,
-    volume: number
+    volume: number,
+    grupo: string,
+    familia: string
 }
