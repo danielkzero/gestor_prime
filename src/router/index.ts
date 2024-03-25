@@ -52,6 +52,11 @@ const routes = [
         path: '/relatorio/bling',
         name: 'RelatoriosProporcao',
         component: () => import('../views/paginas/relatorio/bling.vue')
+      },
+      {
+        path: '/monitoramento/equipamentos',
+        name: 'MonitoramentoEquipamento',
+        component: () => import('../views/paginas/monitoramento/equipamentos.vue')
       }
     ]
   }
