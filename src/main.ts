@@ -8,9 +8,6 @@ import 'boxicons/css/boxicons.min.css';
 // @ts-ignore
 import JsonExcel from "vue-json-excel3";
 
-
-
-
 import "primevue/resources/primevue.min.css";
 import "primeicons/primeicons.css";
 
