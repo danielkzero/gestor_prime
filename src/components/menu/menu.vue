@@ -8,15 +8,25 @@
             <details>
                 <summary><i class="bx bx-basket"></i>Pedidos</summary>
                 <ul>
-                    <li><router-link to="/pedidos" active-class="active">Meus pedidos</router-link></li>
+                    <li><router-link to="/pedidos" :class="{ active: isActiveRoute('/pedidos') }">Meus pedidos</router-link></li>
                     <li>
                         <details>
                             <summary><i class="bx bx-chart"></i>Relatórios</summary>
                             <ul>
-                                <li><router-link to="/relatorio/bling" active-class="active">Bling</router-link></li>
-                                <li><router-link to="/relatorio/proporcao" active-class="active">Proporção</router-link></li>
+                                <li><router-link to="/relatorio/bling" :class="{ active: isActiveRoute('/relatorio/bling') }">Bling</router-link></li>
+                                <li><router-link to="/relatorio/proporcao" :class="{ active: isActiveRoute('/relatorio/proporcao') }">Proporção</router-link></li>
                             </ul>
                         </details>
+                    </li>
+                </ul>
+            </details>
+        </li>
+        <li>
+            <details>
+                <summary><i class="bx bx-show"></i>Monitoramento</summary>
+                <ul>
+                    <li>
+                        <router-link to="/monitoramento/equipamentos" :class="{ active: isActiveRoute('/monitoramento/equipamentos') }">Equipamentos</router-link>                            
                     </li>
                 </ul>
             </details>
@@ -34,6 +44,11 @@ export default {
         fillG: String, 
         fillESTOR: String,
         themeChecked: Boolean,
+    },
+    methods: {
+    isActiveRoute(route) {
+      return this.$route.path.startsWith(route);
     }
+  }
 }
 </script>
