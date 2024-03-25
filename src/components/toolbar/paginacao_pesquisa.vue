@@ -59,7 +59,7 @@ export default {
                 this.$emit("tproxima");
             }
         },
-        MePesquisaPedido() {           
+        MePesquisaPedido() {
             this.$emit("tpesquisapedido", this.key_pesquisa);
         }
     },
