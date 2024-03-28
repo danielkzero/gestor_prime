@@ -1,10 +1,10 @@
 <template>
-    <div class="rounded-xl w-full shadow" :class="AbrirConteudo ? 'bg-base-200' : 'bg-base-100'">
+    <div class="rounded-xl w-full shadow" :class="AbrirConteudo != 'lista' ? 'bg-base-200' : 'bg-base-100'">
         <div class="drawer lg:drawer-open">
             <input id="menu_manutencao" type="checkbox" class="drawer-toggle" />
 
             <div class="drawer-content">
-                <div v-if="!AbrirConteudo" class="flex justify-content-center w-100 border-b border-base-300">
+                <div v-if="AbrirConteudo == 'lista'" class="flex justify-content-center w-100 border-b border-base-300">
                     <label for="menu_manutencao" class="py-2 lg:hidden drawer-button ms-4 mt-2 mb-0">
                         <i class="bx bx-menu text-2xl"></i>
                     </label>
@@ -20,103 +20,12 @@
                 </div>
 
 
-                <template v-if="AbrirConteudo">
-                    <div class="p-3 py-md-3 py-3 bg-base-100 shadow rounded-tr-box">
-                        <div class="flex justify-content-between align-items-center">
-                            <div class="flex align-items-center overflow-hidden">
-                                <i @click="AbrirConteudo = false"
-                                    class="bx bx-chevron-left bx-sm cursor-pointer me-2 back_lista"></i>
-                                <h6 class="mb-0 me-2">{{ DadosConteudo.id_equipamento + ' - ' + DadosConteudo.nome_equipamento }}
-                                    <span class="badge badge-warning">autor: {{ DadosConteudo.autor }}</span>
-                                </h6>
-                            </div>
-
-                            <div class="cursor-pointer bx-tada-hover manutencao_finalizada" data-finalizado="19">
-                                <i class="bx bxs-flag-checkered"></i>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="p-10 py-5">
-                        <div class="stat p-0 m-0">
-                            <div class="stat-figure text-base">
-                                <span>{{ DataHoraFormatada(DadosConteudo.cadastrado_em.toString()) }}</span>
-                            </div>
-                            <div class="stat-title"></div>
-                            <div class="">
-                                <h4 class="text-xl font-bold" v-if="DadosConteudo.id_equipamento">
-                                    {{ DadosConteudo.id_equipamento + ' - ' + DadosConteudo.nome_equipamento }}
-                                </h4>
-                            </div>
-                            <div class="stat-desc capitalize">{{ DadosConteudo.autor }}</div>
-                        </div>
-                        <div class="card bg-base-100 shadow my-4 p-5">
-                            <div class="flex text-primary rounded">
-                                <i class="bx bxs-quote-left me-2"></i> {{ DadosConteudo.descritivo }}
-                            </div>
-                        </div>
-                        <!-- Lista de situações -->
-                        <h4 class="text-xl" v-if="DadosConteudo.situacao?.length > 0">Situação:</h4>
-                        <template v-for="item in (DadosConteudo.situacao as any)">
-                            <div class="badge badge-neutral me-1 my-3">{{ item.nome }}</div>
-                        </template>
-                        <!-- Lista de anexos -->
-                        <h4 class="text-xl" v-if="DadosConteudo.anexo?.length > 0">Anexo:</h4>
-                        <template v-for="item in (DadosConteudo.anexo as any)">
-                            <a :href="'http://191.168.0.12/assets/img/avatars/st/'+item.url_anexo" target="_blank">
-                                <div class="badge badge-primary my-3 me-1">
-                                    <i class="bx bx-paperclip me-2"></i>{{ item.url_anexo }}
-                                </div>
-                            </a>
-                        </template>
-                        <!-- Pareceres das situações -->
-                        <h4 class="text-xl" v-if="DadosConteudo.parecer?.length > 0">Parecer:</h4>
-                        <template v-for="(item) in (DadosConteudo.parecer as any)">
-                            <div class="conversation">
-                                <template v-if="item.autor == Usuario">
-                                    <div class="chat chat-end">
-                                        <div class="chat-image avatar">
-                                            <div class="w-10 rounded-full">
-                                                <img alt="Tailwind CSS chat bubble component"
-                                                :src="'http://191.168.0.12/assets/img/avatars/' + item.url_avatar" />
-                                            </div>
-                                        </div>
-                                        <div class="chat-header">
-                                            <span class="capitalize">{{ item.autor }}</span>
-                                            <time class="text-xs opacity-50 ms-2">{{ DataHoraFormatadaAmigavel(item.data) }}</time>
-                                        </div>
-                                        <div class="chat-bubble chat-bubble-success">teste de comentário!</div>
-                                        <div class="chat-footer opacity-50">
-                                            {{ HoraFormatada(item.data) }}
-                                        </div>
-                                    </div>
-                                </template>
-                                <template v-else>
-                                    <div class="chat chat-start">
-                                        <div class="chat-image avatar">
-                                            <div class="w-10 rounded-full">
-                                                <img alt="Tailwind CSS chat bubble component"
-                                                    :src="'http://191.168.0.12/assets/img/avatars/' + item.url_avatar" />
-                                            </div>
-                                        </div>
-                                        <div class="chat-header">
-                                            <span class="capitalize">{{ item.autor }}</span>
-                                            <time class="text-xs opacity-50 ms-2">{{ DataHoraFormatadaAmigavel(item.data) }}</time>
-                                        </div>
-                                        <div class="chat-bubble">{{ item.parecer }}</div>
-                                        <div class="chat-footer opacity-50">
-                                            {{ HoraFormatada(item.data) }}
-                                        </div>
-                                    </div>
-                                </template>
-                            </div>
-                        </template>
-                    </div>
-                </template>
-
-
-                <template v-else>
+                <template v-if="AbrirConteudo == 'lista'">
                     <DataTable class="table table-zebra" :value="dados" :paginator="true" :rows="10"
-                        :rowsPerPageOptions="[5, 10, 20]" @row-click="MostrarConteudo($event)">
+                        :rowsPerPageOptions="[5, 10, 20]" @row-click="MostrarConteudo($event)" :pt="{
+                            table: { style: 'cursor: pointer' }
+                        }">
+
                         <template #empty> Nada encontrado. </template>
                         <template #loading> Carregamento em processo... </template>
                         <Column field="id_prioridade" style="width: 30px; min-width: 30px" header="-">
@@ -144,13 +53,30 @@
                         </Column>
                     </DataTable>
                 </template>
+
+                <template v-else-if="AbrirConteudo == 'interno'">
+                    <conteudoManutencaoEquipamento
+                        :AbrirConteudo="AbrirConteudo"
+                        :DadosConteudo="DadosConteudo"
+                        :ListaParecer="ListaParecer"
+                        :Usuario="Usuario"
+                        @enviarParecer="enviarParecer" 
+                        @changeAbrirConteudo="changeAbrirConteudo"
+                    ></conteudoManutencaoEquipamento>
+                </template>
+
+                <template v-else>
+                    <cadastroManutencaoEquipamento                        
+                        @changeAbrirConteudo="changeAbrirConteudo"
+                    ></cadastroManutencaoEquipamento>
+                </template>
             </div>
 
             <div class="drawer-side z-30">
                 <label for="menu_manutencao" aria-label="close sidebar" class="drawer-overlay"></label>
-                <ul class="menu bg-base-100 rounded-tl-box rounded-bl-box min-h-full w-56" id="menu">
+                <ul class="menu bg-base-100 rounded-tl-box rounded-bl-box min-h-full w-56 " id="menu">
                     <li>
-                        <button class="btn btn-sm btn-secondary mb-2">
+                        <button class="btn btn-sm btn-secondary mb-2" @click="AbrirConteudo = 'cadastro'">
                             Nova manutenção
                         </button>
                     </li>
@@ -189,12 +115,19 @@
             </div>
         </div>
     </div>
+
 </template>
 <script lang="ts">
 import axios from "axios";
-import { manutencao } from "../../../provider/interface_manutecao.ts";
+import { manutencao, parecer } from "../../../provider/interface_manutecao.ts";
 import { DataFormatada, DataHoraFormatada, DataHoraFormatadaAmigavel, HoraFormatada } from "../../../funcoes/conversoes.ts";
+import cadastroManutencaoEquipamento from './componentes/cadastroManutencaoEquipamento.vue';
+import conteudoManutencaoEquipamento from './componentes/conteudoManutencaoEquipamento.vue';
 export default {
+    components: {
+        cadastroManutencaoEquipamento,
+        conteudoManutencaoEquipamento
+    },
     setup() {
         return { DataFormatada, DataHoraFormatada, DataHoraFormatadaAmigavel, HoraFormatada };
     },
@@ -204,22 +137,71 @@ export default {
             BackupDados: [] as manutencao[],
             totalFinalizado: 0,
             totalAberto: 0,
-            AbrirConteudo: false,
+            AbrirConteudo: 'interno',
             DadosConteudo: {} as manutencao,
             Usuario: '' as string,
+            MeuParecer: '' as string,
+            ListaParecer: [] as parecer[],
+            AbrirCadastroManutencao: false,
         };
     },
+    computed: {
+        rowClass() {
+            return 'cursor-pointer';
+        }
+    },
     methods: {
-        async AtualizarDados(TipoFinalizado: number) {
-            this.AbrirConteudo = false;
+        onModalToggle() {
+            this.AbrirCadastroManutencao = !this.AbrirCadastroManutencao;
+        },
+        async enviarParecer(Usuario: string, MeuParecer: string, id: number) {
+            const response = await axios.post(
+                "/comandos/classes/pcp/comandos/pcp_equipamento_manutencao/inserir_parecer.php",
+                {
+                    id_equipamento_manutencao: id,
+                    parecer: MeuParecer,
+                    autor: Usuario
+                }, {
+                headers: {
+                    "Content-Type": "multipart/form-data",
+                },
+            });
+            if (response.status == 200) {
+                this.MeuParecer = '';
+                this.buscaDados(0).then(status => {
+                    if (status === 200) {
+                        this.DadosConteudo = this.dados[this.findIndexById(id)];
+                        this.ListaParecer = this.dados[this.findIndexById(id)].parecer as parecer[];
+                    }
+                });
+
+            }
+        },
+        findIndexById(id: number) {
+            let index = -1;
+            for (let i = 0; i < this.dados.length; i++) {
+                if (this.dados[i].id === id) {
+                    index = i;
+                    break;
+                }
+            }
+            return index;
+        },
+        async buscaDados(TipoFinalizado: number) {
             const response = await axios.get(
                 "/comandos/classes/pcp/comandos/pcp_equipamento_manutencao/listar.php?finalizado=" +
                 TipoFinalizado
             );
-            if (response.status == 200) {
+            let status = response.status;
+            if (status == 200) {
                 this.dados = response.data.data;
                 this.BackupDados = response.data.data;
             }
+            return status;
+        },
+        async AtualizarDados(TipoFinalizado: number) {
+            this.AbrirConteudo = 'lista';
+            this.buscaDados(TipoFinalizado);
             this.AtualizarFinalizados();
             this.AtualizarAbertos();
         },
@@ -257,10 +239,9 @@ export default {
         },
         async FiltrarPrioridade(TipoPrioridade: number) {
             try {
-                this.AbrirConteudo = false;
+                this.AbrirConteudo = 'lista';
                 const dadosFiltrados = this.BackupDados.filter(
-                    (manutencao) =>
-                        manutencao.id_prioridade.toString() === TipoPrioridade.toString()
+                    (manutencao) => manutencao.id_prioridade.toString() === TipoPrioridade.toString()
                 );
                 this.dados = dadosFiltrados;
             } catch (error) {
@@ -268,17 +249,20 @@ export default {
             }
         },
         async LimparFiltroPrioridade() {
-            this.AbrirConteudo = false;
+            this.AbrirConteudo = 'lista';
             this.dados = this.BackupDados;
         },
         MostrarConteudo(e: any) {
-            this.AbrirConteudo = true;
+            this.AbrirConteudo = 'interno';
             this.DadosConteudo = e.data;
-            console.log(this.DadosConteudo);
+            this.ListaParecer = this.DadosConteudo.parecer as parecer[];
         },
+        changeAbrirConteudo(acao: string) {
+            this.AbrirConteudo = acao;
+        }
     },
     mounted() {
-        this.AtualizarDados(0);        
+        this.AtualizarDados(0);
         this.Usuario = localStorage.getItem('usuario') || '';
     },
 };
