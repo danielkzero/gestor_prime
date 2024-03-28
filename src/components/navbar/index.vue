@@ -4,14 +4,6 @@
             <label for="my-drawer" class="p-2 py-2 lg:hidden drawer-button">
                 <i class="bx bx-menu text-2xl"></i>
             </label>
-            <!--<label class="text-xl px-2">
-                <select class="select select-bordered w-full max-w-xs">
-                    <option selected>VALEPLAST</option>
-                    <option>GLOBALPLASTIC</option>
-                    <option>SHOPEE VILLE RECICLE</option>
-                    <option>SHOPEE PLÁSTICOS IND</option>
-                </select>
-            </label>-->
         </div>
         <div class="navbar-end">
             <label class="swap swap-rotate btn btn-ghost btn-circle">
@@ -63,7 +55,7 @@ export default defineComponent({
         return { 
             fillG: 'rgb(255,157,0)', 
             fillESTOR: 'rgb(0,0,0)',
-            themeChecked: true,
+            themeChecked: 'true',
         }
     },
     computed: {
@@ -80,16 +72,19 @@ export default defineComponent({
         async change(isChecked: any) {
             this.fillG = 'rgb(255,157,0)';
             this.fillESTOR = 'rgb(0,0,0)';
+            
+
             if (isChecked == 'true') {
                 this.fillG = 'rgb(255,157,0)';
                 this.fillESTOR = 'rgb(159, 185, 197)';
             }
+
             this.$emit('theme-updated', { fillG: this.fillG, fillESTOR: this.fillESTOR });
         }
     },
     mounted() {
         const themeCheckedFromLocalStorage = localStorage.getItem('themecontroller');
-        this.themeChecked = themeCheckedFromLocalStorage == 'true' ? true : false;
+        this.themeChecked = themeCheckedFromLocalStorage || 'false';
         this.change(this.themeChecked);
     }
 });

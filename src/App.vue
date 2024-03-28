@@ -146,4 +146,24 @@ details > summary::-webkit-details-marker {
   justify-content: center;
   flex-wrap: wrap;  
 }
+.p-component-overlay {
+    background-color: rgba(0, 0, 0, 0.4);
+    transition-duration: 0.2s;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+}
+.p-component-overlay {
+    background-color: rgba(0, 0, 0, 0.32);
+    transition-duration: 0.2s;
+}
+.p-component-overlay-enter {
+    animation: p-component-overlay-enter-animation 150ms forwards;
+}
+.p-dialog-mask.p-component-overlay {
+    pointer-events: auto;
+}
+/*p-dialog-mask p-component-overlay p-component-overlay-enter*/
 </style>

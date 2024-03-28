@@ -18,6 +18,7 @@ import DataTable from 'primevue/datatable';
 import Column from 'primevue/column';
 import Row from 'primevue/row';
 import Steps from 'primevue/steps';
+import Dialog from 'primevue/dialog';
 //import ColumnGroup from 'primevue/ColumnGroup';
 
 
@@ -33,6 +34,7 @@ app.component('DataTable', DataTable);
 app.component('Column', Column);
 app.component('Row', Row);
 app.component('Steps', Steps);
+app.component('Dialog', Dialog);
 app.use(PrimeVue);
 
 /* PRIMEVUE */

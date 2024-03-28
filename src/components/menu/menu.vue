@@ -46,7 +46,7 @@ export default {
         themeChecked: Boolean,
     },
     methods: {
-    isActiveRoute(route) {
+    isActiveRoute(route: any) {
       return this.$route.path.startsWith(route);
     }
   }
