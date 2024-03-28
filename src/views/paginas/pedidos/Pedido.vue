@@ -621,9 +621,9 @@ export default {
                 peso: this.TempArrayItem.peso,
                 cubagem: this.TempArrayItem.cubagem,
                 volume: this.TempArrayItem.volume,
-            };
+            } as ItensPedidoGestor;
             if (JaExiste) {
-                this.itemsPedido[this.findIndexById(dadosRecebidos.codigo)] = dadosRecebidos;
+                this.itemsPedido[this.findIndexById(dadosRecebidos.codigo.toString())] = dadosRecebidos;
                 Swal.fire({
                     title: 'Sucesso!',
                     text: 'Produto atualizado!',
