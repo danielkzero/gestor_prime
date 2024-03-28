@@ -45,7 +45,7 @@ export function DataHoraFormatadaAmigavel(date: string) {
     const diferencaMeses = dataAtual.diff(dataFornecida, 'months');
     let mensagem = '';
     if (diferencaDias < 30) {
-        mensagem = `Há ${diferencaDias} dias`;
+        mensagem = (diferencaDias == 0 ? `Hoje` : (diferencaDias == 1 ? `Ontem` : `Há ${diferencaDias} dias`));
     } else {
         const meses = Math.floor(diferencaMeses);
         const diasRestantes = diferencaDias % 30;
