@@ -275,7 +275,6 @@ import ColumnGroup from "primevue/columngroup";
             }
           );
           this.dados = response.data;
-          console.log(response.data);
         } catch (error) {
           console.error("Erro ao obter dados:", error);
         } finally {
