@@ -36,36 +36,27 @@ export default {
         handleThemeUpdate(data: any) {
             this.fillG = data.fillG; 
             this.fillESTOR = data.fillESTOR;
+        },
+        findAllParentDetails(childElement: any, parentDetails = [] as any[]) : any {
+            if (!childElement || !childElement.parentElement) return [];
+            
+            const parent = childElement.parentElement;
+            
+            if (parent.closest('details')) {
+                parentDetails.push(parent);
+                parent.setAttribute('open', 'open');
+            }
+            
+            return this.findAllParentDetails(parent, parentDetails);
         }
     },
     mounted() {
         const themeCheckedFromLocalStorage = localStorage.getItem('themecontroller');
         this.themeChecked = themeCheckedFromLocalStorage == 'true' ? true : false;
         this.fillESTOR = (this.themeChecked == false ? 'rgb(0,0,0)' : 'rgb(159, 185, 197)');
-
-        const elementosAtivos1 = document.querySelectorAll('#menu .active');
-        elementosAtivos1.forEach(elemento => {
-            const details = elemento.closest('details');
-            if (details) {
-                const elementoAnterior = details?.parentElement?.previousElementSibling;
-                if (elementoAnterior) {
-                    const activeInsidePreviousElement = elementoAnterior.querySelector('a');
-                    if (activeInsidePreviousElement) {
-                        activeInsidePreviousElement.classList.add('active-pai');
-                    }
-                }
-                details.setAttribute('open', 'open');
-            }
-        });
         
-        const elementosAtivos = document.querySelectorAll('#menu .active, #menu .active-pai');
-        elementosAtivos.forEach(elemento => {            
-            const details = elemento.closest('details');
-            if (details) {
-                details.setAttribute('open', 'open');
-                
-            }
-        });
+        const childElement = this.$el.querySelector('.router-link-active'); 
+        this.findAllParentDetails(childElement);
     }
 }
 </script>
