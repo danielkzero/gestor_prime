@@ -23,16 +23,38 @@
         </label>
         <label>
             <div class="w-52 text-sm mb-2">Tipo de equipamento</div>
-            <select class="select select-bordered w-full select-primary mb-2">
-                <option>Molde</option>
-                <option>Máquina</option>
+            <select 
+                v-model="TipoEquipamento" 
+                class="select select-bordered w-full select-primary mb-2">
+                <option value="1">Molde</option>
+                <option value="2">Máquina</option>
             </select>
         </label>
         <label>
             <div class="w-52 text-sm mb-2">Equipamento</div>
             <div class="join w-full mb-2">
-                <input type="text" placeholder="Código" class="join-item input input-bordered w-40  input-primary" />
-                <input type="text" class="join-item input input-bordered w-full input-primary" readonly />
+                <input 
+                    v-model="CodigoEquipamento"
+                    list="SourceLista"
+                    type="text" 
+                    placeholder="Código" 
+                    class="join-item input input-bordered w-40  input-primary" />
+                <input 
+                    v-model="NomeEquipamento"
+                    type="text" 
+                    class="join-item input input-bordered w-full input-primary" 
+                    readonly />
+                <template v-if="TipoEquipamento == 1">
+                    <datalist id="SourceLista">
+                        <option v-for="item in (Molde as any[])" :value="item?.codigo_molde">{{ item?.nome_molde }}</option>
+                    </datalist>
+                </template>
+                <template v-else>
+                    <datalist id="SourceLista">
+                        <option v-for="item in (Maquina as any[])" :value="item?.codigo_maquina">{{ item?.nome_maquina }}</option>
+                    </datalist>
+                </template>
+                
             </div>
         </label>
         <label>
@@ -87,9 +109,42 @@
     </div>
 </template>
 <script lang="ts">
+import axios from 'axios';
 
 export default {
     emits: ['changeAbrirConteudo'],
+    data() {
+        return {
+            situacoes: [] as String[],
+            NovaSituacao: '',
+            Maquina: [],
+            Molde: [],
+            TipoEquipamento: 1,
+            CodigoEquipamento: '',
+            NomeEquipamento: '',
+        }
+    },
+    watch: {
+        TipoEquipamento: function () {
+            this.CodigoEquipamento = '';
+            this.NomeEquipamento = '';
+        },
+        CodigoEquipamento: function () {
+            if (this.TipoEquipamento == 1) {
+                this.Molde.filter((item: any) => {
+                    if (item?.codigo_molde == this.CodigoEquipamento) {
+                        this.NomeEquipamento = item?.nome_molde;
+                    }
+                });
+            }else{
+                this.Maquina.filter((item: any) => {
+                    if (item?.codigo_maquina == this.CodigoEquipamento) {
+                        this.NomeEquipamento = item?.nome_maquina;
+                    }
+                });
+            }
+        }
+    },
     methods: {
         funcaoAbrirConteudo() {
             this.$emit('changeAbrirConteudo', 'lista');
@@ -106,13 +161,25 @@ export default {
                 }
                 this.NovaSituacao = '';
             }
+        },
+        async ListarMaquinas() {
+            const response = await axios.get("/comandos/classes/pcp/comandos/pcp_maquina/listar.php");
+            if (response.status == 200) {
+                this.Maquina = response.data.data;
+                console.log(this.Maquina);
+            }            
+        },
+        async ListarMoldes() {
+            const response = await axios.get("/comandos/classes/pcp/comandos/pcp_molde/listar.php");
+            if (response.status == 200) {
+                this.Molde = response.data.data;
+                console.log(this.Molde);
+            }            
         }
     },
-    data() {
-        return {
-            situacoes: [] as String[],
-            NovaSituacao: '',
-        }
+    mounted() {
+        this.ListarMaquinas();
+        this.ListarMoldes();
     }
 }
 </script>
