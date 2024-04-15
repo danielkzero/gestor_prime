@@ -120,7 +120,7 @@
                             
                             <Column field="percentual" class="text-nowrap" style="min-width:5rem" sortable header="Desc.%">
                                 <template #body="{ data }">
-                                    <div class="text-center">{{  data.percentual == '' ? '0' : data.percentual }}%<i :class="showSignUpOrDown(data.percentual)"></i></div>
+                                    <div class="text-center">{{ calculaDesconto(data) }}%<i :class="showSignUpOrDown(calculaDesconto(data))"></i></div>
                                 </template>
                             </Column>
 
@@ -211,7 +211,7 @@
         <div class="card bg-base-100 shadow col-span-8 md:col-span-2 text-sm">
             <div class="p-4">
                 <div class="pb-3 text-sm">Ações</div>
-                <button class="btn btn-primary w-full btn-sm mb-2" @click="show()">Salvar</button>
+                <button class="btn btn-primary w-full btn-sm mb-2">Salvar</button>
                 <button class="btn btn-ghost w-full btn-sm mb-2" @click="imprimir()">Imprimir</button>
                 <button class="btn btn-ghost hover:bg-red-500 hover:text-red-100 w-full btn-sm mb-2">Cancelar</button>
 
@@ -692,13 +692,20 @@ export default {
             if (isNaN(valorRemold) || valorRemold == 0) {
                 return '';
             }
-            return (valorRemold < 0 ? "bx bx-up-arrow-alt text-green-500" : "bx bx-down-arrow-alt text-red-500")
+            return (valorRemold >= 0 ? "bx bx-up-arrow-alt text-green-500" : "bx bx-down-arrow-alt text-red-500")
         },
-        show() {
-            console.log("-");
+        calculaDesconto(dados: any) {
+            let Percentual = dados.percentual;
+            let Bruto = dados.bruto;
+            let Liquido = dados.liquido;
+            let PercentualCalculado = (1 - (Bruto / Liquido)) * 100;
+            if (parseFloat(Percentual).toFixed(2) != PercentualCalculado.toFixed(2)) {
+                return PercentualCalculado.toFixed(2);
+            }
+            return Percentual == '' ? '0' : Percentual;
         },
         async popularArray(url: string) {
-            let response = await axios.get(`http://191.168.0.12/comandos/classes/com/comandos/com_regra/`+url+`.php`);
+            let response = await axios.get(`http://191.168.0.12/comandos/classes/com/comandos/com_regra/${url}.php`);
             const data = response.data.data;
             const remodeledData = data.map((item: any) => {
                 return {
@@ -709,7 +716,7 @@ export default {
             return remodeledData;
         },
         async popularArrayCombinado(url: string) {
-            let response = await axios.get(`http://191.168.0.12/comandos/classes/com/comandos/com_regra/`+url+`.php`);        
+            let response = await axios.get(`http://191.168.0.12/comandos/classes/com/comandos/com_regra/${url}.php`);        
             const data = response.data.data;
             const remodeledData = data.map((item: any) => {
                 return {
@@ -733,18 +740,19 @@ export default {
             let total = 0;
             if (this.itemsPedido.length > 0) {
                 for(var i = 0; i < this.itemsPedido.length; i++) {
-                    total += parseFloat((this.itemsPedido[i] as any)[key] as string);
+                    total += parseFloat((this.itemsPedido[i] as any)[key] as string) || 0;
                 }
             }
             return String(total);
         },
-        getDescontoTotal() {
+        getDescontoTotal() {            
             let total = parseFloat(this.fnc_somatorio("total_liquido"));
             total = total + parseFloat(this.fnc_somatorio("total_imposto")) * (this.percentual_especial / 100);
 
             let descontoTotal = total * (1 - (this.desconto_suframa / 100));
             descontoTotal = descontoTotal * (1 - (this.desconto_suframa_icms / 100));
             descontoTotal = descontoTotal - this.desconto_adicional;
+
             return total - descontoTotal;
         },
         getImpostoTotal() {
@@ -827,6 +835,7 @@ export default {
                 this.clienteIBGE = data[0];
                 this.clienteNivel = dados[0] as Nivel;
             }
+            console.log(this.clienteIBGE,  this.clienteNivel);
         },
         async getPedidoCompleto(id_pedido: string) {
             let response = await axios.get(`http://191.168.0.12/comandos/classes/pedido/comandos/pedido/json_pedido_completo.php`, { params: {id: id_pedido} });
@@ -1006,7 +1015,6 @@ export default {
                 }
             );
             const data = response.data;
-            //console.log(data);
             let dados = [];
             if (data != null) {
                 for (var i = 0; i < data.data.itens[0][0].length; i++) {
