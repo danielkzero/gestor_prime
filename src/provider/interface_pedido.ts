@@ -1,36 +1,50 @@
 export interface PedidoGestor {
+    numero_pedido: number,
     id_empresa: number,
-    codigo_cliente: string,
+    data_emissao: string,
+    data_entrega: string,
 
+    //informações das pessoas vinculadas ao pedido
+    codigo_cliente: string,
+    cliente: string,
     codigo_vendedor: string,
     vendedor: string,
     codigo_televenda: string,    
     televenda: string,
+    codigo_supervisor: string,
+    supervisor: string,
 
     codigo_prazo: string,
-    numero_pedido: number,
-    data_emissao: string,
-    data_entrega: string,
+    prazo: string,
+    
     tipo_pedido: string,
     tipo_pedido_nome: string,
     nome_cliente: string,
     pedido_emissao: string,
     nivel: string,
     
-    prazo: string,
+    
     caracteristica: string,
-    forma_pagamento: string,
     codigo_forma_pagamento: string,
-    percentual_especial: number,
+    forma_pagamento: string,
+    
+
     obs_pedido: string,
     obs_nota: string,
-    desconto_maximo: number,
-    desconto_suframa: number,
-    desconto_adicional: number,
+
+    percentual_especial: number, //percentual do pedido
+    desconto_maximo: number, //desconto no pedido
+    desconto_suframa: number, //desconto do suframa
+    desconto_adicional: number, //desconto display
+
     status: string,
     autor_lancamento: string,
-    item: Array<ItensPedidoGestor>
+    item: Array<ItensPedidoGestor>,
+
+    codigo_ibge_cidade: string, 
+    codigo_ibge_uf: string, 
 }
+
 
 export interface ItensPedidoGestor {
     codigo: string,
