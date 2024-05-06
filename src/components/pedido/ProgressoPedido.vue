@@ -87,7 +87,9 @@ export default {
             this.getPercentualProgresso(data[0]);
         },
         getPercentualProgresso(item: any) {
-            
+            if (item == undefined) {
+                return;
+            }
             if (item.AmigavelDataCarregamento != null && item.DataCancelPedido == null && item.AmigavelDataEntrega == null) {
                 console.log('Lançar data de carregamento');
             }
