@@ -165,11 +165,11 @@
                                         <div class="absolute right-0 pr-4">{{ formatMoeda(fnc_somatorio("total_liquido")) }}</div>
                                         <div class="text-left border-b border-base-300 pb-3">Sub-total</div>
                                     </div>
-                                    <div class="mb-2">
+                                    <div class="mb-2" v-if="desconto_adicional != 0">
                                         <div class="absolute right-0 pr-4">{{ formatMoeda(String(getDescontoTotal())) }}</div>
                                         <div class="text-left border-b border-base-300 pb-3">Desconto</div>
                                     </div>
-                                    <div class="mb-2">
+                                    <div class="mb-2" v-if="getImpostoTotal() != 0">
                                         <div class="absolute right-0 pr-4">{{ formatMoeda(String(getImpostoTotal())) }}</div>
                                         <div class="text-left border-b border-base-300 pb-3">Imposto</div>
                                     </div>
@@ -473,6 +473,7 @@ export default {
                 this.onModalToggle();
                 this.limparSearchTermFilho();
                 this.getPrecoProduto();
+                this.AnaliseRegraPedido();
             }
         }
     },    
@@ -485,7 +486,7 @@ export default {
         },
         id_empresa: function () {
             this.getNivel(this.codigo_cliente, this.id_empresa);
-        }
+        },
     },
     methods: {
         imprimir() {
@@ -588,7 +589,12 @@ export default {
                 cubagemTotal: data.cubagem * data.qtd,
                 volumeTotal: data.volume * data.qtd,
                 comissao: data.comissao,
-                PrecoMedioQuilo: data.total_liquido / (data.peso * data.qtd)
+                PrecoMedioQuilo: data.total_liquido / (data.peso * data.qtd),
+                familia: data.familia,
+                nome_familia: data.nome_familia,
+                grupo: data.grupo,
+                nome_grupo: data.nome_grupo,
+                total_imposto: 0
             };
             this.AnaliseRegraPedido();
         },
@@ -621,6 +627,10 @@ export default {
                 peso: this.TempArrayItem.peso,
                 cubagem: this.TempArrayItem.cubagem,
                 volume: this.TempArrayItem.volume,
+                familia: this.TempArrayItem.familia,
+                nome_familia: this.TempArrayItem.nome_familia,
+                grupo: this.TempArrayItem.grupo,
+                nome_grupo: this.TempArrayItem.nome_grupo
             } as ItensPedidoGestor;
             if (JaExiste) {
                 this.itemsPedido[this.findIndexById(dadosRecebidos.codigo.toString())] = dadosRecebidos;
@@ -695,10 +705,10 @@ export default {
             return (valorRemold >= 0 ? "bx bx-up-arrow-alt text-green-500" : "bx bx-down-arrow-alt text-red-500")
         },
         calculaDesconto(dados: any) {
-            let Percentual = dados.percentual;
+            let Percentual = String(dados.percentual * (-1));
             let Bruto = dados.bruto;
             let Liquido = dados.liquido;
-            let PercentualCalculado = (1 - (Bruto / Liquido)) * 100;
+            let PercentualCalculado = ((Liquido / Bruto) - 1) * 100;
             if (parseFloat(Percentual).toFixed(2) != PercentualCalculado.toFixed(2)) {
                 return PercentualCalculado.toFixed(2);
             }
@@ -747,7 +757,7 @@ export default {
         },
         getDescontoTotal() {            
             let total = parseFloat(this.fnc_somatorio("total_liquido"));
-            total = total + parseFloat(this.fnc_somatorio("total_imposto")) * (this.percentual_especial / 100);
+            total = total + parseFloat(this.fnc_somatorio("total_imposto"));
 
             let descontoTotal = total * (1 - (this.desconto_suframa / 100));
             descontoTotal = descontoTotal * (1 - (this.desconto_suframa_icms / 100));
@@ -756,12 +766,12 @@ export default {
             return total - descontoTotal;
         },
         getImpostoTotal() {
-            let impostoTotal = (parseFloat(this.fnc_somatorio("total_imposto")) * (this.percentual_especial / 100));
+            let impostoTotal = (parseFloat(this.fnc_somatorio("total_imposto")));
             return impostoTotal;
         },
         getValorTotal() {
             let valorTotal = parseFloat(this.fnc_somatorio("total_liquido"));
-            valorTotal = valorTotal + (parseFloat(this.fnc_somatorio("total_imposto")) * (this.percentual_especial / 100));
+            valorTotal = valorTotal + (parseFloat(this.fnc_somatorio("total_imposto")));
             valorTotal = valorTotal * (1 - (this.desconto_suframa / 100));
             valorTotal = valorTotal * (1 - (this.desconto_suframa_icms / 100));
             valorTotal = valorTotal - this.desconto_adicional;
@@ -778,6 +788,7 @@ export default {
                 precoproduto: 0,
                 precoliquido: 0,
                 icms_destino: 0,
+                total_imposto: 0,
                 subtotal: 0,
                 peso: 0,
                 cubagem: 0,
@@ -786,7 +797,11 @@ export default {
                 cubagemTotal: 0,
                 volumeTotal: 0,
                 comissao: 0,
-                PrecoMedioQuilo: 0
+                PrecoMedioQuilo: 0,
+                familia: "",
+                nome_familia: "",
+                grupo: "",
+                nome_grupo: ""
             };
             const codigo_produto: any = this.ProdutoSelecionado;
             let response = await axios.get(`http://191.168.0.12/comandos/classes/pedido/comandos/pedido/preco_produto.php`, 
@@ -809,8 +824,9 @@ export default {
                     desconto1: 0,
                     precoproduto: this.TempArrayItem.precoproduto,
                     precoliquido: this.TempArrayItem.precoproduto,
+                    total_imposto: (this.TempArrayItem.precoproduto * this.TempArrayItem.icms_destino),
                     icms_destino: this.TempArrayItem.icms_destino,
-                    subtotal: this.TempArrayItem.precoproduto * (1 + this.TempArrayItem.icms_destino),
+                    subtotal: this.TempArrayItem.precoproduto,
                     peso: this.TempArrayItem.peso,
                     cubagem: this.TempArrayItem.cubagem,
                     volume: this.TempArrayItem.volume,
@@ -818,11 +834,14 @@ export default {
                     cubagemTotal: this.TempArrayItem.cubagem,
                     volumeTotal: this.TempArrayItem.volume,
                     comissao: this.TempArrayItem.comissao,
-                    PrecoMedioQuilo:  (this.TempArrayItem.precoproduto * (1 + this.TempArrayItem.icms_destino)) / this.TempArrayItem.peso
+                    PrecoMedioQuilo:  (this.TempArrayItem.precoproduto * (1 + this.TempArrayItem.icms_destino)) / this.TempArrayItem.peso,
+                    familia: this.TempArrayItem.familia,
+                    nome_familia: this.TempArrayItem.nome_familia,
+                    grupo: this.TempArrayItem.grupo,
+                    nome_grupo: this.TempArrayItem.nome_grupo
                 }
-            }
-
-            this.AnaliseRegraPedido();
+                this.AnaliseRegraPedido();
+            }            
         },
         async getNivel(IdCliente: string, IdEmpresa: string) {
             let response = await axios.get(`http://191.168.0.12/comandos/classes/sql/comandos/pessoa/json_ibge_cliente.php`, 
@@ -835,13 +854,11 @@ export default {
                 this.clienteIBGE = data[0];
                 this.clienteNivel = dados[0] as Nivel;
             }
-            console.log(this.clienteIBGE,  this.clienteNivel);
         },
         async getPedidoCompleto(id_pedido: string) {
             let response = await axios.get(`http://191.168.0.12/comandos/classes/pedido/comandos/pedido/json_pedido_completo.php`, { params: {id: id_pedido} });
             const data = response.data.data;
             this.pedido = data;
-
 
             this.codigo_cliente = this.pedido[0].codigo_cliente;
             this.codigo_forma_pagamento = this.pedido[0].codigo_forma_pagamento;
@@ -898,7 +915,6 @@ export default {
 
             let subtotal = this.TempArrayItem.precoliquido;
 
-            subtotal = subtotal * (1 + this.TempArrayItem.icms_destino);
             subtotal = subtotal * this.TempArrayItem.quantidade;
 
             this.TempArrayItem.PrecoMedioQuilo = ((subtotal / this.TempArrayItem.quantidade) * (1 + this.TempArrayItem.icms_destino)) / this.TempArrayItem.peso;            
@@ -913,12 +929,13 @@ export default {
             this.TempArrayItem.desconto1 = 0;
             
             let subtotal = this.TempArrayItem.precoliquido;
-            subtotal = subtotal * (1 + this.TempArrayItem.icms_destino);
             subtotal = subtotal * this.TempArrayItem.quantidade;
 
             this.TempArrayItem.PrecoMedioQuilo = ((subtotal / this.TempArrayItem.quantidade) * (1 + this.TempArrayItem.icms_destino)) / this.TempArrayItem.peso;            
 
             this.TempArrayItem.subtotal = subtotal;
+
+            this.AnaliseRegraPedido();
         },
 
         async CalcularPrecosPelaQuantidade() {
@@ -933,6 +950,8 @@ export default {
             this.TempArrayItem.PrecoMedioQuilo = ((subtotal / this.TempArrayItem.quantidade) * (1 + this.TempArrayItem.icms_destino)) / this.TempArrayItem.peso;            
 
             this.TempArrayItem.subtotal = subtotal;
+
+            this.AnaliseRegraPedido();
         },
         async AnaliseRegraPedido() {
             let existeNaLista = false;
@@ -961,31 +980,33 @@ export default {
                     familias: this.itemsPedido[i].familia,
                     familia_dias_sem_efetuar_compra: 1
                 };
-                TempItem.push(Item);                
+                TempItem.push(Item);
             }
+            console.log(this.TempArrayItem);
             if (!existeNaLista) {
                 let Item: RegraPedidoItem = {
                     pedido_empresa: parseInt(this.id_empresa),
                     produtos: this.TempArrayItem.cod_produto,
                     produto_dias_sem_efetuar_compra: 1,
                     quantidade: String(this.TempArrayItem.quantidade),
-                    unitario_bruto: parseFloat((this.TempArrayItem.precoproduto).toFixed(2)),
+                    unitario_bruto: parseFloat((this.TempArrayItem.precoproduto / parseInt(this.TempArrayItem.emb)).toFixed(2)),
                     bruto: this.TempArrayItem.precoproduto,
                     total_bruto: this.TempArrayItem.precoproduto * this.TempArrayItem.quantidade,
-                    unitario_liquido: parseFloat((this.TempArrayItem.precoliquido).toFixed(2)),
-                    liquido: (this.TempArrayItem.precoliquido),
-                    total_liquido: parseFloat((this.TempArrayItem.precoliquido).toFixed(2)),
-                    peso_unitario: (this.TempArrayItem.peso),
-                    cubagem_unitaria: (this.TempArrayItem.cubagem),
-                    aliquota_repasse: 5,
-                    volume: (this.TempArrayItem.volume),
-                    grupos: this.itemsPedido[i].grupo,
+                    unitario_liquido: parseFloat((this.TempArrayItem.precoliquido / parseInt(this.TempArrayItem.emb)).toFixed(2)),
+                    liquido: this.TempArrayItem.precoliquido,
+                    total_liquido: parseFloat((this.TempArrayItem.precoliquido * this.TempArrayItem.quantidade).toFixed(2)),
+                    peso_unitario: this.TempArrayItem.peso,
+                    cubagem_unitaria: this.TempArrayItem.cubagem,
+                    aliquota_repasse: this.TempArrayItem.comissao,
+                    volume: this.TempArrayItem.volume,
+                    grupos: this.TempArrayItem.grupo,
                     grupo_dias_sem_efetuar_compra: 1,
-                    familias: this.itemsPedido[i].familia,
+                    familias: this.TempArrayItem.familia,
                     familia_dias_sem_efetuar_compra: 1
                 };
                 TempItem.push(Item);
             }
+            
             
             
             this.TempRegraPedido = {
@@ -1006,7 +1027,7 @@ export default {
                 pedido_prazo_do_pedido: this.codigo_prazo,
                 item: [TempItem]
             };
-
+            
             const response = await axios.post(
                 '/comandos/classes/regra/busca_regra.php', {
                     id_pedido: null,
@@ -1017,7 +1038,7 @@ export default {
             const data = response.data;
             let dados = [];
             if (data != null) {
-                for (var i = 0; i < data.data.itens[0][0].length; i++) {
+                for (var i = 0; i < data.data?.itens[0][0]?.length; i++) {
                     if (this.TempArrayItem.cod_produto != '' && this.TempArrayItem.cod_produto == data.data.itens[0][0][i].produtos) {
                         dados.push({
                             acumulativo: data.data.acumulativo,
@@ -1029,7 +1050,8 @@ export default {
                         });
                     }
                 }
-            }            
+            }
+            console.log(data);
             this.RegrasHabilitadas = dados as any;
         }
     },
