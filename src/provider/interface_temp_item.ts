@@ -7,6 +7,7 @@ export interface TempItem {
     desconto1: number,
     precoproduto: number,
     precoliquido: number,
+    total_imposto: number,
     icms_destino: number,
     subtotal: number,
     peso: number,
@@ -16,5 +17,9 @@ export interface TempItem {
     cubagemTotal: number,
     volumeTotal: number,
     comissao: number,
-    PrecoMedioQuilo: number
+    PrecoMedioQuilo: number,
+    familia: string,
+    nome_familia: string,
+    grupo: string,
+    nome_grupo: string
 }
