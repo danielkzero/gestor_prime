@@ -117,7 +117,7 @@
             </Column>
             <ColumnGroup type="footer">
                 <Row>
-                    <Column footer="TOTAIS:" :colspan="4" footerStyle="text-align:right" />
+                    <Column footer="TOTAIS:" :colspan="5" footerStyle="text-align:right" />
                     <Column :footer="sumtotalprodutos" />
                     <Column :footer="sumvalorNota" />
                     <Column :footer="sumdesconto" />
