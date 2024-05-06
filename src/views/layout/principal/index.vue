@@ -55,7 +55,7 @@ export default {
         this.themeChecked = themeCheckedFromLocalStorage == 'true' ? true : false;
         this.fillESTOR = (this.themeChecked == false ? 'rgb(0,0,0)' : 'rgb(159, 185, 197)');
         
-        const childElement = this.$el.querySelector('.router-link-active'); 
+        const childElement = this.$el.querySelector('#menu .active'); 
         this.findAllParentDetails(childElement);
     }
 }
