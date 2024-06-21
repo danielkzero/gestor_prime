@@ -38,7 +38,75 @@
                         <router-link 
                         to="/monitoramento/equipamentos" 
                         :class="{ 'active': isActiveRoute('/monitoramento/equipamentos') }"
-                        :aria-current="!isActiveRoute('/monitoramento/equipamentos') || 'page'">Equipamentos</router-link>                            
+                        :aria-current="!isActiveRoute('/monitoramento/equipamentos') || 'page'">Equipamentos</router-link>
+                    </li>
+                </ul>
+            </details>
+        </li>
+        <li>
+            <details>
+                <summary><i class='bx bxs-user'></i>Comercial</summary>
+                <ul>
+                    <li>
+                        <details>
+                            <summary><i class="bx bx-chart"></i>Relatórios</summary>
+                            <ul>
+                                <li>
+                                    <router-link 
+                                    to="/comercial/relatorio/supervisores" 
+                                    :class="{ 'active': isActiveRoute('/comercial/relatorio/supervisores') }"
+                                    :aria-current="!isActiveRoute('/comercial/relatorio/supervisores') || 'page'">Supervisores</router-link>
+                                </li>
+                                <li>
+                                    <router-link 
+                                    to="/comercial/relatorio/representantes" 
+                                    :class="{ 'active': isActiveRoute('/comercial/relatorio/representantes') }"
+                                    :aria-current="!isActiveRoute('/comercial/relatorio/representantes') || 'page'">Representantes</router-link>
+                                </li>
+                                <li>
+                                    <router-link 
+                                    to="/comercial/relatorio/clientes" 
+                                    :class="{ 'active': isActiveRoute('/comercial/relatorio/clientes') }"
+                                    :aria-current="!isActiveRoute('/comercial/relatorio/clientes') || 'page'">Clientes</router-link>
+                                </li>
+                                <li>
+                                    <router-link 
+                                    to="/comercial/relatorio/grupos" 
+                                    :class="{ 'active': isActiveRoute('/comercial/relatorio/grupos') }"
+                                    :aria-current="!isActiveRoute('/comercial/relatorio/grupos') || 'page'">Grupos</router-link>
+                                </li>
+                                <li>
+                                    <router-link 
+                                    to="/comercial/relatorio/familias" 
+                                    :class="{ 'active': isActiveRoute('/comercial/relatorio/familias') }"
+                                    :aria-current="!isActiveRoute('/comercial/relatorio/familias') || 'page'">Familias</router-link>
+                                </li>
+                                <li>
+                                    <router-link 
+                                    to="/comercial/relatorio/produtos" 
+                                    :class="{ 'active': isActiveRoute('/comercial/relatorio/produtos') }"
+                                    :aria-current="!isActiveRoute('/comercial/relatorio/produtos') || 'page'">Produtos</router-link>
+                                </li>
+                                <li>
+                                    <router-link 
+                                    to="/comercial/relatorio/moldes" 
+                                    :class="{ 'active': isActiveRoute('/comercial/relatorio/moldes') }"
+                                    :aria-current="!isActiveRoute('/comercial/relatorio/moldes') || 'page'">Moldes</router-link>
+                                </li>
+                                <li>
+                                    <router-link 
+                                    to="/comercial/relatorio/metas" 
+                                    :class="{ 'active': isActiveRoute('/comercial/relatorio/metas') }"
+                                    :aria-current="!isActiveRoute('/comercial/relatorio/metas') || 'page'">Metas</router-link>
+                                </li>
+                                <li>
+                                    <router-link 
+                                    to="/comercial/relatorio/mapas" 
+                                    :class="{ 'active': isActiveRoute('/comercial/relatorio/mapas') }"
+                                    :aria-current="!isActiveRoute('/comercial/relatorio/mapas') || 'page'">Mapas</router-link>
+                                </li>
+                            </ul>
+                        </details>
                     </li>
                 </ul>
             </details>

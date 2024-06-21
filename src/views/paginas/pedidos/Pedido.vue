@@ -211,7 +211,7 @@
         <div class="card bg-base-100 shadow col-span-8 md:col-span-2 text-sm">
             <div class="p-4">
                 <div class="pb-3 text-sm">Ações</div>
-                <button class="btn btn-primary w-full btn-sm mb-2">Salvar</button>
+                <button class="btn btn-primary w-full btn-sm mb-2" @click="postPedido()">Salvar</button>
                 <button class="btn btn-ghost w-full btn-sm mb-2" @click="imprimir()">Imprimir</button>
                 <button class="btn btn-ghost hover:bg-red-500 hover:text-red-100 w-full btn-sm mb-2">Cancelar</button>
 
@@ -455,6 +455,8 @@ export default {
             RegrasHabilitadas: [] as AplicacaoRegra[],
             PessoaEndereco: [] as PessoaEndereco[],
             PessoaContato: [] as PessoaContato[],
+
+            vigencia: String,
         }
     },
     computed: {
@@ -482,7 +484,8 @@ export default {
         codigo_cliente: async function () {
             this.getNivel(this.codigo_cliente, this.id_empresa);
             this.PessoaEndereco = await this.buscaEndereco('/comandos/inserts/json_pessoa_endereco.php', this.codigo_cliente);
-            this.PessoaContato = await this.buscaContato('/comandos/inserts/json_pessoa_contato.php', this.codigo_cliente);            
+            this.PessoaContato = await this.buscaContato('/comandos/inserts/json_pessoa_contato.php', this.codigo_cliente);
+            console.log(this.PessoaEndereco);
         },
         id_empresa: function () {
             this.getNivel(this.codigo_cliente, this.id_empresa);
@@ -748,7 +751,7 @@ export default {
         },
         fnc_somatorio(key: string): string {
             let total = 0;
-            if (this.itemsPedido.length > 0) {
+            if (this.itemsPedido?.length > 0) {
                 for(var i = 0; i < this.itemsPedido.length; i++) {
                     total += parseFloat((this.itemsPedido[i] as any)[key] as string) || 0;
                 }
@@ -855,18 +858,57 @@ export default {
                 this.clienteNivel = dados[0] as Nivel;
             }
         },
+        postPedido() {
+            let pedido = {
+                Id: this.id,
+                IdEmpresa: this.id_empresa, 
+                CdChamadaCliente: this.codigo_cliente, 
+                NmCliente: this.nome_cliente, 
+                DataEmissaoPedido: this.data_emissao, 
+                DataEntregaPedido: this.data_entrega, 
+                CdPrazo: this.codigo_prazo, 
+                ObsPedido: this.obs_pedido,
+                ObsNF: this.obs_nota, 
+                CdFormaPagamento: this.codigo_forma_pagamento, 
+                CdRepresentante: this.codigo_vendedor, 
+                NmRepresentante: this.vendedor, 
+                VlTotalPedido: this.fnc_somatorio("total_liquido"), 
+                StErro: '0', 
+                IdBairro: (this.PessoaEndereco.length > 0 ? this.PessoaEndereco[0].IdBairro : ''),
+                NmBairro: (this.PessoaEndereco.length > 0 ? this.PessoaEndereco[0].NmBairro : ''), 
+                IdCidade: (this.PessoaEndereco.length > 0 ? this.PessoaEndereco[0].IdCidade : ''), 
+                NmCidade: (this.PessoaEndereco.length > 0 ? this.PessoaEndereco[0].NmCidade : ''), 
+                IdUF: (this.PessoaEndereco.length > 0 ? this.PessoaEndereco[0].IdUF : ''), 
+                CdRepresentanteAdc: this.codigo_televenda, 
+                CdSupervisor: '', 
+                NmSupervisor: '', 
+                IdIBGECidade: this.clienteIBGE.IBGE, 
+                IdIBGEUF: this.clienteIBGE.IBGE.substring(0, 2), 
+                Vigencia:  this.vigencia, 
+                ErroPrazo: '0', 
+                descontomaximo: '0', 
+                PercentualPedido: this.percentual_especial, 
+                AutorLancamento: localStorage.getItem('usuario'), 
+                Tipo: this.tipo_pedido,
+                DescontoSuframa: this.desconto_suframa, 
+                DescontoDisplay: this.getDescontoTotal(), 
+                AdicionalST: this.getImpostoTotal()
+            };
+
+            console.log(pedido, this.itemsPrazo);
+        },
         async getPedidoCompleto(id_pedido: string) {
             let response = await axios.get(`http://191.168.0.12/comandos/classes/pedido/comandos/pedido/json_pedido_completo.php`, { params: {id: id_pedido} });
             const data = response.data.data;
             this.pedido = data;
 
-            this.codigo_cliente = this.pedido[0].codigo_cliente;
+            this.codigo_cliente = this.pedido[0]?.codigo_cliente;
             this.codigo_forma_pagamento = this.pedido[0].codigo_forma_pagamento;
             this.codigo_prazo =  this.pedido[0].codigo_prazo;
             this.codigo_televenda = this.pedido[0].codigo_televenda;
             this.codigo_vendedor = this.pedido[0].codigo_vendedor;
             this.data_emissao = this.pedido[0].data_emissao ?? new Date();
-            this.data_entrega = this.pedido[0].data_entrega ?? moment(new Date(), 'YYYY-MM-DD').add(7,'days').format('DD/MM/YYYY');
+            this.data_entrega = this.pedido[0].data_entrega ?? moment(new Date(), 'YYYY-MM-DD').add(14,'days').format('DD/MM/YYYY');
             this.desconto_adicional = this.pedido[0].desconto_adicional;
             this.desconto_maximo = this.pedido[0].desconto_maximo;
 
@@ -982,7 +1024,6 @@ export default {
                 };
                 TempItem.push(Item);
             }
-            console.log(this.TempArrayItem);
             if (!existeNaLista) {
                 let Item: RegraPedidoItem = {
                     pedido_empresa: parseInt(this.id_empresa),
@@ -1056,6 +1097,13 @@ export default {
         }
     },
     async mounted() {
+        this.data_entrega = moment(new Date()).add(14, 'days').format("yyyy-MM-DD");
+
+        const dadosVigencia = await axios.get(this.apiGestor + `/vigencia`);
+        if (dadosVigencia.data.length > 0) {
+            this.vigencia = dadosVigencia.data[0].vigencia;
+        }
+       
         this.itemsPesquisa = await this.popularArrayCombinado('lista_produto');
         this.itemsEmpresa = await this.popularArrayCombinado('lista_empresa');
         this.itemsCliente = await this.popularArrayCombinado('lista_cliente');
@@ -1069,7 +1117,7 @@ export default {
             this.status = 'O';
         }
 
-        this.timeoutId = setTimeout(this.resizeTextarea, 1000);
+        this.timeoutId = setTimeout(this.resizeTextarea, 1000);        
     }
 }
 </script>
