@@ -46,12 +46,17 @@ export default {
             if(pedido == undefined) {
                 return;
             }
+            
             let response_cliente = await axios.get('/comandos/inserts/json_pessoa_endereco.php', {params: { codigo: pedido.codigo_cliente }}); 
-            this.info_cliente = response_cliente.data.data[0];
+            if (response_cliente.data.length > 0) {
+                this.info_cliente = response_cliente.data.data[0];
+            }
 
             let response_contato = await axios.get('/comandos/inserts/json_pessoa_contato.php', {params: { codigo: pedido.codigo_cliente }});
-            this.info_contato = response_contato.data.data;
-
+            if (response_contato.data.length > 0) {
+                this.info_contato = response_contato.data.data;
+            }
+            
             let lista_contato = "";
             for(var i = 0; i < this.info_contato.length; i++) {            
                 lista_contato += this.info_contato[i].Contato;
@@ -90,9 +95,11 @@ export default {
             var desconto_suframa = pedido.desconto_suframa;
 
             let itens = [] as ItensPedidoGestor[];
-            JSON.parse(JSON.stringify(pedido.item[0])).forEach((element: ItensPedidoGestor) => {
-                itens.push(element);
-            });
+            if (pedido.item[0] != null) {
+                JSON.parse(JSON.stringify(pedido.item[0])).forEach((element: ItensPedidoGestor) => {
+                    itens.push(element);
+                });
+            }            
             
 
             for (var i = 0; i < itens.length; i++) {
