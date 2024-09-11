@@ -166,14 +166,12 @@ export default {
             const response = await axios.get("/comandos/classes/pcp/comandos/pcp_maquina/listar.php");
             if (response.status == 200) {
                 this.Maquina = response.data.data;
-                console.log(this.Maquina);
             }            
         },
         async ListarMoldes() {
             const response = await axios.get("/comandos/classes/pcp/comandos/pcp_molde/listar.php");
             if (response.status == 200) {
                 this.Molde = response.data.data;
-                console.log(this.Molde);
             }            
         }
     },

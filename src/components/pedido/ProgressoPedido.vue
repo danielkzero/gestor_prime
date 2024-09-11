@@ -91,7 +91,7 @@ export default {
                 return;
             }
             if (item.AmigavelDataCarregamento != null && item.DataCancelPedido == null && item.AmigavelDataEntrega == null) {
-                console.log('Lançar data de carregamento');
+                //console.log('Lançar data de carregamento');
             }
             if(item.DataCancelPedido != null) {
                 this.cancelado = true;

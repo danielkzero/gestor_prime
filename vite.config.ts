@@ -25,19 +25,20 @@ export default defineConfig({
     cors: true,
     proxy: {
       '/api': {
-        target: 'http://191.168.0.12/api',
+        target: 'http://192.168.102.9/api',
         changeOrigin: true,
         rewrite: (path) => path.replace(/^\/api/, ''),
       },
       '/comandos': {
-        target: 'http://191.168.0.12/comandos',
+        target: 'http://192.168.102.9/comandos',
         changeOrigin: true,
         rewrite: (path) => path.replace(/^\/comandos/, ''),
       },
     },
   },
+  base: './',
   build: {
-    base: '',
+    base: './',
     assetsDir: 'assets',
   },
 })

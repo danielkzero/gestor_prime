@@ -14,23 +14,29 @@
         </template>
     </div>
 </template>
+
 <script lang="ts">
-import { Item } from '../../provider/interface_item_descricao.ts';
+//import { Item } from '../../provider/interface_item_descricao.ts';
+
 export default {
     props: {
         items: {
-            type: Array as () => Item[],
+            type: Array as () => any[],
             default: () => [],
         },
         minLetraPesquisar: {
             type: Number,
             default: 0,
+        },
+        modelValue: {
+            type: Object as () => any | null,
+            default: null,
         }
     },
     data() {
         return {
-            searchTerm: "",
-            itemEscolhido: [],
+            searchTerm: this.modelValue ? this.modelValue.descricao : '',
+            itemEscolhido: this.modelValue || null,
             dropdownVisible: false,
             activeIndex: -1,
         };
@@ -40,7 +46,7 @@ export default {
             if (this.searchTerm.length >= this.minLetraPesquisar) {
                 const searchWords = this.searchTerm.trim().toLowerCase().split(" ");
                 return this.items.filter((item: any) =>
-                    searchWords.every((word) =>
+                    searchWords.every((word: any) =>
                         item.descricao.toLowerCase().includes(word) || item.id.toString().toLowerCase().includes(word)
                     )
                 );
@@ -49,9 +55,6 @@ export default {
         },
     },
     methods: {
-        setSearchTerm() {
-            this.searchTerm = '';
-        },
         filterItems() {
             this.dropdownVisible = this.filteredItems.length > 0;
             if (this.dropdownVisible && !this.isActiveItemInView()) {
@@ -118,9 +121,13 @@ export default {
         },
     },
     watch: {
-        SearchTerm() {
-            this.activeIndex = -1;
-        },
+        modelValue: {
+            handler(newVal) {
+                this.searchTerm = newVal ? newVal.descricao : '';
+                this.itemEscolhido = newVal;
+            },
+            immediate: true
+        }
     },
     mounted() {
         (this.$refs.inputRef as any).focus();

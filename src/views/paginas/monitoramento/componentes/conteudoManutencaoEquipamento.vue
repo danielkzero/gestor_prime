@@ -42,7 +42,7 @@
             <!-- Lista de anexos -->
             <h4 class="text-xl" v-if="DadosConteudo.anexo?.length > 0">Anexo:</h4>
             <template v-for="item in (DadosConteudo.anexo as any)">
-                <a :href="'http://191.168.0.12/assets/img/avatars/st/' + item.url_anexo" target="_blank">
+                <a :href="'http://192.168.102.9/assets/img/avatars/st/' + item.url_anexo" target="_blank">
                     <div class="badge badge-primary my-3 me-1">
                         <i class="bx bx-paperclip me-2"></i>{{ item.url_anexo }}
                     </div>
@@ -57,7 +57,7 @@
                             <div class="chat-image avatar">
                                 <div class="w-10 rounded-full">
                                     <img :alt="'foto de ' + item.autor"
-                                        :src="'http://191.168.0.12/assets/img/avatars/' + item.url_avatar" />
+                                        :src="'http://192.168.102.9/assets/img/avatars/' + item.url_avatar" />
                                 </div>
                             </div>
                             <div class="chat-header">
@@ -77,7 +77,7 @@
                             <div class="chat-image avatar">
                                 <div class="w-10 rounded-full">
                                     <img :alt="'foto de ' + item.autor"
-                                        :src="'http://191.168.0.12/assets/img/avatars/' + item.url_avatar" />
+                                        :src="'http://192.168.102.9/assets/img/avatars/' + item.url_avatar" />
                                 </div>
                             </div>
                             <div class="chat-header">

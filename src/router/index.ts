@@ -11,7 +11,7 @@ const routes = [
     path: '/login',
     name: 'Login',
     component: () => import('../views/login/index.vue'),
-  },  
+  },
   {
     path: '/esqueci_minha_senha',
     name: 'EsqueciMinhaSenha',
@@ -39,9 +39,24 @@ const routes = [
         component: () => import('../views/paginas/pedidos/index.vue')
       },
       {
+        path: '/terceirizado',
+        name: 'Terceirizado',
+        component: () => import('../views/paginas/programacao/terceirizado.vue')
+      },
+      {
+        path: '/cadastro_terceirizado',
+        name: 'Cadastro_terceirizado',
+        component: () => import('../views/paginas/programacao/cadastro_terceirizado.vue')
+      },
+      {
         path: '/pedidos/:id',
         name: 'Pedido',
         component: () => import('../views/paginas/pedidos/Pedido.vue')
+      },
+      {
+        path: '/pedidos/novo',
+        name: 'PedidoNovo',
+        component: () => import('../views/paginas/teste/index.vue')
       },
       {
         path: '/relatorio/proporcao',
@@ -57,7 +72,53 @@ const routes = [
         path: '/monitoramento/equipamentos',
         name: 'MonitoramentoEquipamento',
         component: () => import('../views/paginas/monitoramento/equipamentos.vue')
-      }
+      },
+      {
+        path: '/comercial/relatorio/supervisores',
+        name: 'ComercialRelatorioSupervisores',
+        component: () => import('../views/paginas/monitoramento/equipamentos.vue')
+      },
+      {
+        path: '/comercial/relatorio/representantes/:id',
+        name: 'ComercialRelatorioRepresentantes',
+        component: () => import('../views/paginas/relatorio/desempenhoRepresentante.vue')
+      },
+      {
+        path: '/comercial/relatorio/clientes',
+        name: 'ComercialRelatorioClientes',
+        component: () => import('../views/paginas/monitoramento/equipamentos.vue')
+      },
+      {
+        path: '/comercial/relatorio/grupos',
+        name: 'ComercialRelatorioGrupos',
+        component: () => import('../views/paginas/monitoramento/equipamentos.vue')
+      },
+      {
+        path: '/comercial/relatorio/familias',
+        name: 'ComercialRelatorioFamilias',
+        component: () => import('../views/paginas/monitoramento/equipamentos.vue')
+      },
+      {
+        path: '/comercial/relatorio/produtos',
+        name: 'ComercialRelatorioProdutos',
+        component: () => import('../views/paginas/monitoramento/equipamentos.vue')
+      },
+      {
+        path: '/comercial/relatorio/moldes',
+        name: 'ComercialRelatorioMoldes',
+        component: () => import('../views/paginas/monitoramento/equipamentos.vue')
+      },
+      {
+        path: '/comercial/relatorio/metas',
+        name: 'ComercialRelatorioMetas',
+        component: () => import('../views/paginas/monitoramento/equipamentos.vue')
+      },
+      {
+        path: '/comercial/relatorio/mapas',
+        name: 'ComercialRelatorioMapas',
+        component: () => import('../views/paginas/monitoramento/equipamentos.vue')
+      },
+
     ]
   }
 ];

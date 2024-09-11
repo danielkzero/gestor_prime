@@ -19,6 +19,10 @@ import Column from 'primevue/column';
 import Row from 'primevue/row';
 import Steps from 'primevue/steps';
 import Dialog from 'primevue/dialog';
+import Card from 'primevue/card';
+import AutoComplete from 'primevue/autocomplete';
+import IconField from 'primevue/iconfield';
+import InputIcon from 'primevue/inputicon';
 //import ColumnGroup from 'primevue/ColumnGroup';
 
 
@@ -35,6 +39,11 @@ app.component('Column', Column);
 app.component('Row', Row);
 app.component('Steps', Steps);
 app.component('Dialog', Dialog);
+app.component('Card', Card);
+app.component('AutoComplete', AutoComplete);
+app.component('IconField', IconField);
+app.component('InputIcon', InputIcon);
+
 app.use(PrimeVue);
 
 /* PRIMEVUE */
@@ -42,3 +51,4 @@ app.provide('apiGestor', apiGestor);
 registerPlugins(app);
 
 app.mount('#app');
+

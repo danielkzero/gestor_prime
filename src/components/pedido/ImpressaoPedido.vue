@@ -26,7 +26,6 @@ export default {
     },
     watch: {
         Pedido: function() {
-            console.log(this.Pedido);
             this.imprimir(this.Pedido, true);
         }
     },

@@ -1,16 +1,17 @@
 <template>
     <div class="rounded-xl navbar bg-base-100 shadow">
-        <div class="navbar-start">
-            <label for="my-drawer" class="p-2 py-2 lg:hidden drawer-button">
+        <div class="navbar">
+            <label for="my-drawer" class="p-2 ps-0 lg:hidden drawer-button">
                 <i class="bx bx-menu text-2xl"></i>
             </label>
         </div>
+        
         <div class="navbar-end">
             <label class="swap swap-rotate btn btn-ghost btn-circle">
                 <input ref="themecontroller" @click="themeChange()" type="checkbox" class="theme-controller"
-                    value="sunset" v-model="themeChecked" />                    
-                    <i class='swap-on fill-current bx bx-moon text-xl'></i>
-                    <i class='swap-off fill-current bx bx-sun text-xl'></i>
+                    value="sunset" v-model="themeChecked" />
+                <i class='swap-on fill-current bx bx-moon text-xl'></i>
+                <i class='swap-off fill-current bx bx-sun text-xl'></i>
             </label>
 
             <button class="btn btn-ghost btn-circle">
@@ -21,9 +22,8 @@
             </button>
             <div class="dropdown dropdown-end">
                 <div tabindex="0" role="button" class="avatar p-1">
-
                     <div class="w-10 rounded-full">
-                        <img src="http://191.168.0.12/assets/img/avatars/-850af92f168512596557402018910397853.jpg" />
+                        <img src="http://192.168.102.9/assets/img/avatars/-850af92f168512596557402018910397853.jpg" />
                     </div>
                 </div>
                 <ul tabindex="0" class="menu dropdown-content z-[1] p-2 shadow bg-base-100 rounded-box w-52 mt-4">
@@ -51,15 +51,15 @@
 <script lang="ts">
 import { defineComponent } from 'vue';
 export default defineComponent({
-    data() { 
-        return { 
-            fillG: 'rgb(255,157,0)', 
+    data() {
+        return {
+            fillG: 'rgb(255,157,0)',
             fillESTOR: 'rgb(0,0,0)',
             themeChecked: 'true',
         }
     },
     computed: {
-        watchThemeController() {            
+        watchThemeController() {
             return (this.$refs.themecontroller as HTMLInputElement).value;
         },
     },
@@ -67,12 +67,12 @@ export default defineComponent({
         async themeChange() {
             const isChecked = (this.$refs.themecontroller as HTMLInputElement).checked;
             localStorage.setItem('themecontroller', isChecked.toString());
-            this.change(isChecked.toString());            
+            this.change(isChecked.toString());
         },
         async change(isChecked: any) {
             this.fillG = 'rgb(255,157,0)';
             this.fillESTOR = 'rgb(0,0,0)';
-            
+
 
             if (isChecked == 'true') {
                 this.fillG = 'rgb(255,157,0)';

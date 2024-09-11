@@ -30,7 +30,7 @@ export default {
     props: {
         Label: String,
         Dados: {
-            type: Array as () => Item[] | undefined,
+            type: Array as () => any[] | undefined,
             default: () => undefined,
         },
         modelValue: String,
@@ -50,7 +50,7 @@ export default {
         };
     },
     computed: {
-        indexModel: {
+        /*indexModel: {
             get() {
                 if (!this.modelValue) {
                     return null;
@@ -64,11 +64,35 @@ export default {
                 this.Displayme(novoValor.id ?? null);
                 this.Editar = false;
             }
+        }*/
+        indexModel: {
+            get() {
+                if (!this.modelValue) {
+                    return null;
+                }
+                const selectedItem = this.Dados?.find((item: Item) => item.id === this.modelValue) as Item;
+                this.Displayme(selectedItem);
+                return selectedItem;
+            },
+            set(value: Item) {
+                this.$emit('update:modelValue', value.id ?? null);
+                this.Displayme(value);
+                this.Editar = false;
+            }
         }
     },
     methods: {
+        /*
         Displayme(index: any) {
             const item: Item = this.Dados?.find((item: Item) => item.id === index) as Item;
+            this.Display = item?.descricao ?? '';
+        },
+        Remove() {
+            this.$emit('update:modelValue', null); 
+            this.Displayme(null);
+            this.Editar = false; 
+        }*/
+        Displayme(item: Item | null) {
             this.Display = item?.descricao ?? '';
         },
         Remove() {
@@ -78,7 +102,11 @@ export default {
         }
     },
     watch: {
-        indexModel() {}
+        indexModel() {},
+        modelValue() {
+            const selectedItem = this.Dados?.find((item: Item) => item.id === this.modelValue) as Item;
+            this.Displayme(selectedItem);
+        }
     }
 };
 </script>
