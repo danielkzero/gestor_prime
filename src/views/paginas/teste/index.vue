@@ -20,6 +20,10 @@ export default {
     methods: {
         async criarPedidoNovo() {
             const response = await axios.post(this.apiGestor+'/pedidos/novo');
+<<<<<<< HEAD
+=======
+            console.log(response);
+>>>>>>> a2e26fe5bedd6904803c2d4e64c79eb73ee68e79
             if (response.status == 200) {
                 if (response.data.numero_pedido != '' && response.data.mensagem == 'OK') {
                     router.push({ name: 'Pedido', params: { id: response.data.numero_pedido } });

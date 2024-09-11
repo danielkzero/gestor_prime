@@ -485,6 +485,10 @@ export default {
             this.getNivel(this.codigo_cliente, this.id_empresa);
             this.PessoaEndereco = await this.buscaEndereco('/comandos/inserts/json_pessoa_endereco.php', this.codigo_cliente);
             this.PessoaContato = await this.buscaContato('/comandos/inserts/json_pessoa_contato.php', this.codigo_cliente);
+<<<<<<< HEAD
+=======
+            console.log(this.PessoaEndereco);
+>>>>>>> a2e26fe5bedd6904803c2d4e64c79eb73ee68e79
         },
         id_empresa: function () {
             this.getNivel(this.codigo_cliente, this.id_empresa);
@@ -893,7 +897,12 @@ export default {
                 DescontoDisplay: this.getDescontoTotal(), 
                 AdicionalST: this.getImpostoTotal()
             };
+<<<<<<< HEAD
             console.log(pedido);
+=======
+
+            console.log(pedido, this.itemsPrazo);
+>>>>>>> a2e26fe5bedd6904803c2d4e64c79eb73ee68e79
         },
         async getPedidoCompleto(id_pedido: string) {
             let response = await axios.get(`http://192.168.102.9/comandos/classes/pedido/comandos/pedido/json_pedido_completo.php`, { params: {id: id_pedido} });

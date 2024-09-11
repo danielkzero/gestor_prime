@@ -79,9 +79,15 @@ const routes = [
         component: () => import('../views/paginas/monitoramento/equipamentos.vue')
       },
       {
+<<<<<<< HEAD
         path: '/comercial/relatorio/representantes/:id',
         name: 'ComercialRelatorioRepresentantes',
         component: () => import('../views/paginas/relatorio/desempenhoRepresentante.vue')
+=======
+        path: '/comercial/relatorio/representantes',
+        name: 'ComercialRelatorioRepresentantes',
+        component: () => import('../views/paginas/monitoramento/equipamentos.vue')
+>>>>>>> a2e26fe5bedd6904803c2d4e64c79eb73ee68e79
       },
       {
         path: '/comercial/relatorio/clientes',
@@ -118,7 +124,11 @@ const routes = [
         name: 'ComercialRelatorioMapas',
         component: () => import('../views/paginas/monitoramento/equipamentos.vue')
       },
+<<<<<<< HEAD
 
+=======
+      
+>>>>>>> a2e26fe5bedd6904803c2d4e64c79eb73ee68e79
     ]
   }
 ];
