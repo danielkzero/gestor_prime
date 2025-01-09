@@ -1,6 +1,6 @@
 <template>
   <div class="hero min-h-screen" style="
-      background-image: url(https://besthqwallpapers.com/Uploads/21-5-2018/53309/rio-de-janeiro-city-panorama-bay-coast-ocean.jpg);
+      background-image: url(https://barramansa.rj.gov.br/wp-content/uploads/2019/08/download-1024x678.jpg);
     ">
     <div class="hero-overlay bg-opacity-70"></div>
     <div class="hero-content">

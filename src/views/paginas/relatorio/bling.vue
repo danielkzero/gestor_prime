@@ -80,11 +80,11 @@
         <DataTable :loading="loadData" class="table table-sm" :value="dados" :paginator="true" :rows="50" :rowsPerPageOptions="[10, 50, 100]">
           <Column field="data" style="width: 100px; min-width: 100px" sortable header="#Cód.Loja">
                 <template #body="{ data }">
-                    <div class="font-bold">{{ data.numeroPedidoLoja }}</div>
+                    <div class="font-bold">{{ data.numeroLoja }}</div>
                 </template>
             </Column>
-            <Column field="numero_bling" style="width: 100px; min-width: 100px" sortable header="#Cód."></Column>
-            <Column field="chaveAcesso" style="width: 100px; min-width: 100px" sortable header="Chave de acesso"></Column>        
+            <Column field="numero" style="width: 100px; min-width: 100px" sortable header="#Cód."></Column>
+            <Column field="chaveAcesso2" style="width: 100px; min-width: 100px" sortable header="Chave de acesso"></Column>        
             <Column field="data" style="width: 100px; min-width: 100px" sortable header="Cadastro">
                 <template #body="{ data }">
                     <div class="font-bold">{{ formatData((data).cadastro) }}</div>
@@ -95,33 +95,15 @@
                     <div class="font-bold">{{ formatData((data).dataEmissao) }}</div>
                 </template>
             </Column>
-            <Column field="totalprodutos" style="width: 100px; min-width: 100px" sortable header="Vl.">
+            <Column field="total" style="width: 100px; min-width: 100px" sortable header="Total">
                 <template #body="{ data }">
-                    <div>{{ formatMoeda((data).totalprodutos) }}</div>
-                </template>
-            </Column>
-            <Column field="valorNota" style="width: 100px; min-width: 100px" sortable header="Vl.Nota">
-                <template #body="{ data }">
-                    <div>{{ formatMoeda((data).valorNota) }}</div>
-                </template>
-            </Column>
-            <Column field="desconto" style="width: 100px; min-width: 100px" sortable header="Desconto">
-                <template #body="{ data }">
-                    <div>{{ formatMoeda((data).desconto) }}</div>
-                </template>
-            </Column>
-            <Column field="valorfrete" style="width: 100px; min-width: 100px" sortable header="Frete">
-                <template #body="{ data }">
-                    <div>{{ formatMoeda((data).valorfrete) }}</div>
+                    <div>{{ formatMoeda((data).total ?? 0) }}</div>
                 </template>
             </Column>
             <ColumnGroup type="footer">
                 <Row>
                     <Column footer="TOTAIS:" :colspan="5" footerStyle="text-align:right" />
-                    <Column :footer="sumtotalprodutos" />
                     <Column :footer="sumvalorNota" />
-                    <Column :footer="sumdesconto" />
-                    <Column :footer="sumvalorfrete" />
                 </Row>
             </ColumnGroup>
         </DataTable>
@@ -181,7 +163,7 @@ import ColumnGroup from "primevue/columngroup";
         },
         sumvalorNota() {
             let somatorio = this.dados.reduce(
-                (somatorio: number, item) => somatorio + (item.valorNota * 1), 0
+                (somatorio: number, item) => somatorio + (item.total * 1), 0
             );
             return this.formatMoeda(String(somatorio));
         },
@@ -275,6 +257,7 @@ import ColumnGroup from "primevue/columngroup";
             }
           );
           this.dados = response.data;
+          console.log(response.data);
         } catch (error) {
           console.error("Erro ao obter dados:", error);
         } finally {

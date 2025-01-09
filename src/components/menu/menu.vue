@@ -59,11 +59,7 @@
                                 </li>
                                 <li>
                                     <router-link 
-<<<<<<< HEAD
                                     to="/comercial/relatorio/representantes/111" 
-=======
-                                    to="/comercial/relatorio/representantes" 
->>>>>>> a2e26fe5bedd6904803c2d4e64c79eb73ee68e79
                                     :class="{ 'active': isActiveRoute('/comercial/relatorio/representantes') }"
                                     :aria-current="!isActiveRoute('/comercial/relatorio/representantes') || 'page'">Representantes</router-link>
                                 </li>
@@ -111,7 +107,6 @@
                                 </li>
                             </ul>
                         </details>
-<<<<<<< HEAD
                     </li>
                 </ul>
             </details>
@@ -131,8 +126,6 @@
                         to="/terceirizado" 
                         :class="{ 'active': isActiveRoute('/terceirizado') }"
                         :aria-current="!isActiveRoute('/terceirizado') || 'page'">Terceirizado</router-link>
-=======
->>>>>>> a2e26fe5bedd6904803c2d4e64c79eb73ee68e79
                     </li>
                 </ul>
             </details>
